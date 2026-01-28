@@ -133,6 +133,41 @@ This document outlines the vulnerabilities included in this framework and which 
 - **Location**: (To be added) Lack of security logging
 - **SAST Tools**: Checkmarx, Fortify, SonarQube
 
+### 11. SBOM and Dependency Analysis
+
+#### Software Bill of Materials (SBOM) Issues
+- **Location**: `src/sbom/`
+- **Examples**:
+  - Outdated packages with known CVEs (lodash 4.17.10, async 1.5.2)
+  - License compliance issues (GPL, AGPL, proprietary licenses)
+  - Missing or incorrect license information
+  - Typosquatting packages (requrest vs request)
+  - Unpinned dependencies and version conflicts
+  - Incomplete or inaccurate SBOMs
+  - SBOM configuration and storage issues
+- **SBOM Tools**: Syft, Trivy-SBOM, cdxgen-cbom, cdxgen-mlbom
+- **SAST Tools**: GitLab SAST, Black Duck, SonarQube (partial coverage)
+
+#### Dependency File Vulnerabilities
+- **Location**: `src/sbom/package-sbom.json`, `src/sbom/requirements-sbom.txt`, `src/sbom/pom-sbom.xml`
+- **Examples**:
+  - Packages with specific CVEs (CVE-2017-16016, CVE-2018-3728)
+  - License conflicts and compliance issues
+  - Deprecated and abandoned packages
+  - Direct Git references without commit hashes
+  - Local file dependencies
+  - Untrusted package sources
+- **SBOM Tools**: Syft, Trivy-SBOM, cdxgen-cbom, cdxgen-mlbom
+
+#### SBOM Configuration Issues
+- **Location**: `src/sbom/syft-config.yaml`
+- **Examples**:
+  - Insecure SBOM generation configurations
+  - Missing metadata and provenance
+  - Incomplete dependency graphs
+  - World-readable SBOM files
+- **SBOM Tools**: Syft, Trivy-SBOM
+
 ## Language-Specific Coverage
 
 ### Java
@@ -175,6 +210,18 @@ This document outlines the vulnerabilities included in this framework and which 
 - **Vulnerabilities**: SQLi, Command Injection, XSS, Path Traversal, Insecure Deserialization
 - **SAST Tools**: Checkmarx, Fortify, Coverity, SonarQube
 
+### SBOM and Dependency Analysis
+- **Files**: `src/sbom/*`
+- **Vulnerabilities**:
+  - Package dependencies with known CVEs
+  - License compliance issues (GPL, AGPL, proprietary)
+  - Missing license information
+  - Typosquatting and supply chain attacks
+  - Unpinned dependencies
+  - Incomplete SBOMs and missing metadata
+- **SBOM Tools**: Syft, Trivy-SBOM, cdxgen-cbom, cdxgen-mlbom
+- **SAST Tools**: GitLab SAST, Black Duck, SonarQube (partial)
+
 ## Infrastructure as Code
 
 ### Docker
@@ -194,11 +241,19 @@ This document outlines the vulnerabilities included in this framework and which 
 
 ## Testing Recommendations
 
+### For SAST Tools:
 1. **Run SAST Tools** against each language directory
 2. **Compare Results** across different tools
 3. **Verify Detection Rates** for each vulnerability type
 4. **Check False Positives/Negatives**
 5. **Test Infrastructure Scanning** with Checkov or similar
+
+### For SBOM Tools:
+1. **Generate SBOMs** using Syft, cdxgen, or Trivy against `src/sbom/` directory
+2. **Scan SBOMs** for vulnerabilities with Trivy-SBOM
+3. **Validate SBOM Quality** for completeness and standards compliance
+4. **Test Configuration** with different SBOM tool settings
+5. **Compare SBOM Outputs** across different generation tools
 
 ## Notes
 

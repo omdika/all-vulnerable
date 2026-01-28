@@ -5,6 +5,51 @@ All notable changes to the All-Vulnerable Framework will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-01-28
+
+### Added
+- **SBOM (Software Bill of Materials) tool support**:
+  - Added support for Syft, Trivy-SBOM, cdxgen-cbom, cdxgen-mlbom
+  - New `src/sbom/` directory with SBOM-specific vulnerabilities
+  - Dependency files with license compliance issues and known CVEs
+  - SBOM configuration files with security issues
+  - Example vulnerable SBOM in SPDX format
+
+- **New vulnerability types for SBOM tools**:
+  - Package dependencies with specific CVEs (CVE-2017-16016, CVE-2018-3728, etc.)
+  - License compliance issues (GPL, AGPL, proprietary licenses)
+  - Missing or incorrect license information
+  - Typosquatting and supply chain attack examples
+  - Unpinned dependencies and version conflicts
+  - Incomplete or inaccurate SBOMs
+  - SBOM configuration and storage vulnerabilities
+
+- **Updated documentation**:
+  - Added SBOM tools to README.md supported tools list
+  - Updated SAST_TOOL_COVERAGE.md with SBOM tool coverage
+  - Enhanced USAGE.md with SBOM testing instructions
+  - Added README-SBOM.md specific to SBOM vulnerabilities
+
+- **New files in `src/sbom/`**:
+  - `package-sbom.json` - Node.js package with SBOM-detectable vulnerabilities
+  - `requirements-sbom.txt` - Python requirements with license/CVE issues
+  - `pom-sbom.xml` - Maven POM with license compliance issues
+  - `go.mod.sbom` - Go module with replace/exclude vulnerabilities
+  - `Dockerfile-sbom` - Dockerfile with SBOM-relevant issues
+  - `syft-config.yaml` - Syft configuration with security issues
+  - `vulnerable-sbom.spdx.json` - Example SBOM with vulnerabilities
+  - `README-SBOM.md` - SBOM-specific documentation
+
+### Updated
+- Enhanced existing dependency files with more SBOM-detectable issues
+- Updated documentation structure to include SBOM tools
+- Improved vulnerability categorization for dependency analysis
+
+### Notes
+- SBOM tools complement traditional SAST by focusing on supply chain security
+- Framework now covers both code vulnerabilities and dependency vulnerabilities
+- Supports software supply chain security testing and compliance checking
+
 ## [1.0.0] - 2026-01-28
 
 ### Added

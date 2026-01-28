@@ -1,0 +1,103 @@
+# Vulnerable Dockerfile for SBOM tool testing
+
+# VULNERABLE: Using latest tag (SBOM tools should flag)
+FROM ubuntu:latest
+
+# VULNERABLE: Running as root
+USER root
+
+# VULNERABLE: Hardcoded credentials in environment variables
+ENV DB_PASSWORD="password123"
+ENV API_KEY="sk_live_1234567890abcdef"
+ENV AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
+ENV AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+
+# VULNERABLE: No LABEL metadata (SBOM tools use labels)
+# Missing labels: org.opencontainers.image.*, maintainer, etc.
+
+# VULNERABLE: Installing packages with known CVEs
+RUN apt-get update && apt-get install -y \
+    openssl=1.1.1-1ubuntu2.1~18.04.20 \  # Old version with CVEs
+    libssl1.1=1.1.1-1ubuntu2.1~18.04.20 \
+    # VULNERABLE: Installing unnecessary packages
+    telnet \
+    ftp \
+    # VULNERABLE: Not cleaning up apt lists
+    && rm -rf /var/lib/apt/lists/*
+
+# VULNERABLE: Copying all files without .dockerignore
+COPY . /app
+
+# VULNERABLE: Adding files from URLs (potential supply chain attack)
+ADD https://untrusted-source.example.com/script.sh /tmp/script.sh
+RUN chmod +x /tmp/script.sh
+
+# VULNERABLE: Exposing all ports
+EXPOSE 1-65535
+
+# VULNERABLE: Running service as root
+CMD ["python", "/app/app.py"]
+
+# VULNERABLE: No HEALTHCHECK instruction
+
+# VULNERABLE: Using chmod 777
+RUN chmod 777 /app
+
+# VULNERABLE: Adding sudo to image
+RUN apt-get install -y sudo
+
+# VULNERABLE: Installing Node.js with known vulnerabilities
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+    && apt-get install -y nodejs \
+    && node --version
+
+# VULNERABLE: Installing Python packages with CVEs
+RUN pip3 install \
+    Django==1.11.0 \
+    Flask==0.12.0 \
+    requests==2.18.0
+
+# VULNERABLE: Copying configuration with secrets
+COPY config.json /app/config.json
+# config.json might contain: {"api_key": "secret123", "password": "password123"}
+
+# VULNERABLE: Setting workdir to root
+WORKDIR /
+
+# VULNERABLE: Using ADD for local archives (extracts automatically)
+ADD ./archive.tar.gz /opt/
+
+# VULNERABLE: Volume with world-writable permissions
+VOLUME ["/data"]
+RUN chmod 777 /data
+
+# VULNERABLE: ONBUILD instructions that inherit vulnerabilities
+ONBUILD COPY . /app
+ONBUILD RUN npm install  # Could install vulnerable packages
+
+# VULNERABLE: ARG with default value that might contain secrets
+ARG BUILD_SECRET="default_secret_123"
+
+# VULNERABLE: SHELL instruction changing default shell
+SHELL ["/bin/bash", "-c"]
+
+# VULNERABLE: STOPSIGNAL not set (default SIGTERM)
+
+# VULNERABLE: Using deprecated MAINTAINER instruction
+MAINTAINER Vulnerable Developer <vulnerable@example.com>
+
+# Safe Dockerfile for comparison
+# FROM ubuntu:20.04
+# USER nonrootuser:nonrootgroup
+# LABEL org.opencontainers.image.authors="developer@example.com"
+# LABEL org.opencontainers.image.version="1.0.0"
+# RUN apt-get update && apt-get install -y \
+#     openssl \
+#     && rm -rf /var/lib/apt/lists/*
+# COPY --chown=nonrootuser:nonrootgroup . /app
+# WORKDIR /app
+# EXPOSE 8080
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+#     CMD curl -f http://localhost:8080/health || exit 1
+# USER nonrootuser
+# CMD ["python", "app.py"]

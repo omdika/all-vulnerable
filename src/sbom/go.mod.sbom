@@ -1,0 +1,76 @@
+module github.com/vulnerable/sbom-go-app
+
+go 1.13 // VULNERABLE: Old Go version
+
+require (
+	// VULNERABLE: Direct dependencies with known CVEs
+	github.com/gorilla/sessions v1.1.3 // CVE-2020-7696
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // CVE-2020-26160
+	github.com/gin-gonic/gin v1.4.0 // Old version
+	gopkg.in/yaml.v2 v2.2.8 // CVE-2019-11253
+
+	// VULNERABLE: Indirect dependencies with vulnerabilities
+	github.com/mholt/archiver v3.1.1+incompatible // Old version
+
+	// VULNERABLE: Replace directives (could mask vulnerabilities)
+	github.com/vuln/dep v1.0.0 => ./local-replacement
+
+	// VULNERABLE: Exclude directives (could exclude patched versions)
+	golang.org/x/text v0.3.0 // Excluded in real scenario
+
+	// VULNERABLE: Git dependencies without version pins
+	github.com/some/unpinned v0.0.0-20210101000000-abcdef123456
+
+	// VULNERABLE: Local replace
+	example.com/local/module v1.0.0 => ../local-module
+
+	// VULNERABLE: Duplicate imports
+	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1 // Different version
+
+	// VULNERABLE: Packages with license issues
+	github.com/gpl/library v1.0.0 // GPL license
+
+	// VULNERABLE: Packages with no license
+	github.com/nolicense/module v2.0.0+incompatible
+
+	// VULNERABLE: Deprecated packages
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // Old
+
+	// VULNERABLE: Test dependencies in main require
+	github.com/stretchr/testify v1.6.1
+)
+
+// VULNERABLE: replace directives that could bypass security checks
+replace (
+	github.com/vulnerable/dependency => ./local-copy
+	golang.org/x/crypto => github.com/untrusted/crypto v0.0.0
+)
+
+// VULNERABLE: exclude directives hiding vulnerabilities
+exclude (
+	golang.org/x/text v0.3.3
+)
+
+// VULNERABLE: No indirect version pins
+// indirect dependencies may have vulnerabilities
+
+// VULNERABLE: Using +incompatible versions
+// These bypass Go module versioning
+
+// Safe go.mod for comparison
+/*
+module github.com/secure/app
+
+go 1.19
+
+require (
+	github.com/gorilla/sessions v1.2.1
+	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/gin-gonic/gin v1.9.0
+	gopkg.in/yaml.v3 v3.0.1
+)
+
+// No replace or exclude directives
+// All dependencies properly versioned
+*/

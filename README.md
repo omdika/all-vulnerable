@@ -10,9 +10,11 @@ This framework is designed for educational and testing purposes only. It contain
 - Organizations evaluate SAST tool effectiveness
 - Security training and awareness programs
 
-## Supported SAST Tools
+## Supported Security Tools
 
 This framework includes vulnerabilities detectable by:
+
+### SAST (Static Application Security Testing) Tools:
 - Checkmarx SAST
 - Fortify Static Code Analyzer
 - GitHub CodeQL
@@ -24,6 +26,12 @@ This framework includes vulnerabilities detectable by:
 - Checkov SAST
 - Kiuwan
 - SonarQube
+
+### SBOM (Software Bill of Materials) Tools:
+- Syft - SBOM generation and analysis
+- Trivy-SBOM - Vulnerability scanning for SBOMs
+- cdxgen-cbom - CycloneDX SBOM generation
+- cdxgen-mlbom - Multi-language BOM generation
 
 ## Security Warning
 
@@ -44,14 +52,16 @@ src/
 ├── go/             - Go vulnerabilities
 ├── php/            - PHP vulnerabilities
 ├── ruby/           - Ruby vulnerabilities
-└── csharp/         - C#/.NET vulnerabilities
+├── csharp/         - C#/.NET vulnerabilities
+├── infrastructure/ - Infrastructure as Code vulnerabilities
+└── sbom/           - SBOM and dependency vulnerabilities
 tests/              - Test cases for vulnerabilities
 docs/               - Documentation
 ```
 
 ## Vulnerability Categories
 
-Each language directory contains examples of:
+### Application Security Vulnerabilities:
 - Injection flaws (SQL, NoSQL, OS command, LDAP)
 - Broken Authentication and Session Management
 - Sensitive Data Exposure
@@ -63,12 +73,40 @@ Each language directory contains examples of:
 - Using Components with Known Vulnerabilities
 - Insufficient Logging & Monitoring
 
+### SBOM and Dependency Vulnerabilities:
+- Outdated packages with known CVEs
+- License compliance issues (GPL, AGPL, proprietary)
+- Missing or incorrect license information
+- Typosquatting and supply chain attacks
+- Unpinned dependencies and version conflicts
+- Incomplete or inaccurate SBOMs
+- SBOM configuration and storage issues
+
 ## Usage
 
+### For SAST Tools:
 1. Clone this repository
 2. Navigate to the language directory of interest
 3. Run your SAST tool against the code
 4. Review the findings
+
+### For SBOM Tools:
+1. Navigate to `src/sbom/` directory
+2. Generate SBOMs using Syft, cdxgen, or Trivy
+3. Scan SBOMs for vulnerabilities and compliance issues
+4. Validate SBOM quality and completeness
+
+### Example Commands:
+```bash
+# Generate SBOM with Syft
+syft dir:src/sbom/ -o spdx-json > sbom.json
+
+# Scan SBOM with Trivy
+trivy sbom sbom.json
+
+# Generate CycloneDX BOM with cdxgen
+cdxgen -o bom.cdx.json src/sbom/
+```
 
 ## Contributing
 

@@ -1,0 +1,67 @@
+# Syft configuration file - shows how SBOM tools can be configured
+# This file demonstrates both proper and improper configurations
+
+# VULNERABLE: Scanning configuration issues
+
+# Scanning too broadly (security risk)
+scope: all-layers  # VULNERABLE: Scans all layers, could expose secrets
+
+# VULNERABLE: Output configuration issues
+outputs:
+  - format: spdx-json
+    file: sbom.spdx.json
+  - format: cyclonedx-json
+    file: sbom.cdx.json
+  # VULNERABLE: Writing to insecure location
+  - format: json
+    file: /tmp/sbom.json  # World-readable temporary file
+
+# VULNERABLE: Excluding important packages
+exclude:
+  - path: /app/node_modules/  # Might exclude vulnerable dependencies
+  - path: /app/vendor/
+  - path: /app/.git/  # Good practice, but could hide git secrets
+
+# VULNERABLE: Not configuring catalogers properly
+catalogers:
+  - all  # VULNERABLE: Using all catalogers, could be slow/invasive
+
+# VULNERABLE: Missing important configurations
+# No source info configuration
+# No attestation configuration
+# No provenance configuration
+
+# VULNERABLE: File selection issues
+file-selectors:
+  - pattern: "**/*.java"
+  # VULNERABLE: Not scanning important file types
+  # Missing: **/*.py, **/*.js, **/*.go, etc.
+
+# VULNERABLE: Platform configuration issues
+platform: linux/amd64
+# Should specify architecture, but could be wrong
+
+# Safe configuration for comparison
+"""
+# scope: squashed  # Only final image
+# outputs:
+#   - format: spdx-json
+#     file: ./build/sbom.spdx.json
+#     digest: sha256
+# exclude:
+#   - path: /app/.git
+#   - path: /app/.env
+#   - path: /tmp
+# catalogers:
+#   - python
+#   - javascript
+#   - go
+#   - java
+# source:
+#   type: image
+#   target: myapp:latest
+# attestations:
+#   - predicate-type: https://spdx.dev/Document
+# provenance:
+#   enabled: true
+"""

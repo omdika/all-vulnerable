@@ -1,0 +1,162 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-01-28T10:00:00Z",
+    "creators": ["Tool: Syft-0.80.0"],
+    "licenseListVersion": "3.20"
+  },
+  "name": "sbom-vulnerable-app",
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://example.com/sbom/vulnerable-app",
+  "documentDescribes": ["SPDXRef-Package-sbom-vulnerable-app"],
+
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-sbom-vulnerable-app",
+      "name": "sbom-vulnerable-app",
+      "versionInfo": "1.0.0",
+      "downloadLocation": "NOASSERTION",  // VULNERABLE: No download location
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",  // VULNERABLE: No license info
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/sbom-vulnerable-app@1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-lodash-4.17.10",
+      "name": "lodash",
+      "versionInfo": "4.17.10",
+      "downloadLocation": "https://registry.npmjs.org/lodash/-/lodash-4.17.10.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/lodash@4.17.10"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:lodash_project:lodash:4.17.10:*:*:*:*:*:*:*"
+        }
+      ],
+      "annotations": [
+        {
+          "annotationDate": "2026-01-28T10:00:00Z",
+          "annotationType": "OTHER",
+          "annotator": "Tool: Trivy",
+          "comment": "CVE-2021-23337: lodash before 4.17.21 is vulnerable to Command Injection"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-async-1.5.2",
+      "name": "async",
+      "versionInfo": "1.5.2",
+      "downloadLocation": "https://registry.npmjs.org/async/-/async-1.5.2.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/async@1.5.2"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:caolan:async:1.5.2:*:*:*:*:*:*:*"
+        }
+      ],
+      "annotations": [
+        {
+          "annotationDate": "2026-01-28T10:00:00Z",
+          "annotationType": "OTHER",
+          "annotator": "Tool: Trivy",
+          "comment": "CVE-2017-16016: async before 2.6.0 is vulnerable to Regular Expression Denial of Service (ReDoS)"
+        }
+      ]
+    },
+    // VULNERABLE: Missing packages (not all dependencies listed)
+    // VULNERABLE: Duplicate package entries
+    {
+      "SPDXID": "SPDXRef-Package-lodash-4.17.4",
+      "name": "lodash",
+      "versionInfo": "4.17.4",  // Different version than above
+      "downloadLocation": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/lodash@4.17.4"
+        }
+      ]
+    },
+    // VULNERABLE: Package with no license information
+    {
+      "SPDXID": "SPDXRef-Package-nolicense-1.0.0",
+      "name": "no-license-package",
+      "versionInfo": "1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",  // VULNERABLE: No license
+      "copyrightText": "NOASSERTION",
+      "externalRefs": []
+    },
+    // VULNERABLE: Package with GPL license (compliance issue)
+    {
+      "SPDXID": "SPDXRef-Package-gpl-library-1.0.0",
+      "name": "gpl-library",
+      "versionInfo": "1.0.0",
+      "downloadLocation": "https://example.com/gpl-library-1.0.0.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "GPL-3.0-only",  // VULNERABLE: GPL license
+      "licenseDeclared": "GPL-3.0-only",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": []
+    }
+  ],
+
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-sbom-vulnerable-app",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-sbom-vulnerable-app",
+      "relatedSpdxElement": "SPDXRef-Package-lodash-4.17.10",
+      "relationshipType": "CONTAINS"
+    },
+    // VULNERABLE: Missing relationships (incomplete dependency graph)
+    // VULNERABLE: Incorrect relationship types
+  ],
+
+  "hasExtractedLicensingInfos": [
+    // VULNERABLE: Missing licensing information
+  ],
+
+  "annotations": [
+    // VULNERABLE: No annotations about SBOM quality
+  ],
+
+  // VULNERABLE: Missing document-level comments
+  "comment": "SBOM generated by automated tool"
+}

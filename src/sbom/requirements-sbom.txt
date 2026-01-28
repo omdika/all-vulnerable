@@ -1,0 +1,74 @@
+# Python requirements with SBOM-detectable vulnerabilities
+
+# VULNERABLE: Packages with known CVEs
+Django==1.11.0  # Multiple CVEs including CVE-2019-19844
+Flask==0.12.0   # CVE-2018-1000656
+requests==2.18.0  # CVE-2018-18074
+urllib3==1.21.1  # CVE-2018-20060
+pyyaml==3.13  # CVE-2017-18342
+
+# VULNERABLE: Packages with GPL licenses (license compliance issues)
+# Hypothetical packages
+gpl-library==1.0.0
+agpl-tool==2.0.0
+
+# VULNERABLE: Packages with no license information
+no-license-package==1.0.0
+
+# VULNERABLE: Packages with deprecated/abandoned status
+# These packages are no longer maintained
+deprecated-package==0.1.0
+abandoned-lib==1.2.3
+
+# VULNERABLE: Packages with security advisories
+cryptography==2.5  # Old version with vulnerabilities
+paramiko==2.4.2  # CVE-2018-7750
+tensorflow==1.13.1  # Multiple CVEs
+
+# VULNERABLE: Packages with typosquatting names
+# (Similar to popular packages)
+requrests==2.25.1  # Typo of 'requests'
+pyyaml==5.4.1  # Legitimate but old
+numpy==1.16.0  # Old version with vulnerabilities
+
+# VULNERABLE: Packages with proprietary dependencies
+proprietary-dependency==1.0.0
+
+# VULNERABLE: Direct Git references (SBOM tools should flag these)
+git+https://github.com/user/unpinned-repo.git
+git+https://github.com/another/private-repo@v1.0.0
+
+# VULNERABLE: Local file dependencies
+./local-package/
+../relative-path/
+
+# VULNERABLE: Packages from untrusted indexes
+--index-url http://untrusted-index.example.com/simple/
+untrusted-package==1.0.0
+
+# VULNERABLE: Packages with conflicting licenses
+mit-licensed==2.0.0
+apache-licensed==1.5.0
+gpl-conflicting==3.0.0
+
+# VULNERABLE: Outdated packages (EOL)
+python-2.7-backport==1.0.0
+legacy-support==0.9.0
+
+# VULNERABLE: Development packages in production requirements
+pytest==4.6.0  # Should be in dev requirements
+coverage==4.5.0
+flake8==3.7.0
+
+# VULNERABLE: Packages with known supply chain attacks
+# (Hypothetical examples)
+malicious-package==1.0.0
+compromised-lib==2.1.0
+
+# VULNERABLE: Duplicate packages
+Django==1.11.0
+django==2.2.0  # Case-sensitive duplicate
+
+# VULNERABLE: Packages with incorrect version specifiers
+bad-specifier-package>=  # Invalid specifier
+another-bad-package==  # Incomplete version

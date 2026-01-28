@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sbom.vulnerable</groupId>
+    <artifactId>sbom-vulnerable-java</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>SBOM Vulnerable Java</name>
+    <description>Java project with SBOM-detectable vulnerabilities</description>
+
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source> <!-- VULNERABLE: Old Java version -->
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- VULNERABLE: Dependencies with known CVEs -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version> <!-- CVE-2015-6420 -->
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version> <!-- CVE-2019-17571 -->
+        </dependency>
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.2</version> <!-- CVE-2016-3092 -->
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.9</version> <!-- CVE-2019-12384 -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>4.3.20.RELEASE</version> <!-- Old version -->
+        </dependency>
+
+        <!-- VULNERABLE: Dependencies with GPL licenses -->
+        <dependency>
+            <groupId>com.gpl.library</groupId>
+            <artifactId>gpl-dependency</artifactId>
+            <version>1.0.0</version>
+            <!-- GPL license - SBOM tools should flag for compliance -->
+        </dependency>
+
+        <!-- VULNERABLE: Dependencies with no license information -->
+        <dependency>
+            <groupId>com.nolicense</groupId>
+            <artifactId>no-license-lib</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+
+        <!-- VULNERABLE: Dependencies from untrusted repositories -->
+        <!--
+        <repositories>
+            <repository>
+                <id>untrusted-repo</id>
+                <url>http://untrusted-repo.example.com/maven2</url>
+            </repository>
+        </repositories>
+        -->
+
+        <!-- VULNERABLE: Duplicate dependencies with different versions -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version> <!-- Old version -->
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.0-jre</version> <!-- Newer version - conflict -->
+        </dependency>
+
+        <!-- VULNERABLE: Optional dependencies with CVEs -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>8.5.0</version> <!-- Old version -->
+            <optional>true</optional>
+        </dependency>
+
+        <!-- VULNERABLE: Test dependencies with vulnerabilities -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version> <!-- Old version -->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- VULNERABLE: Provided scope dependencies with CVEs -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version> <!-- Very old -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- VULNERABLE: Runtime scope dependencies -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.48</version> <!-- Old version -->
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- VULNERABLE: System scope dependencies (not in Maven Central) -->
+        <dependency>
+            <groupId>com.custom</groupId>
+            <artifactId>custom-lib</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/custom.jar</systemPath>
+        </dependency>
+
+        <!-- VULNERABLE: Import scope dependencies (BOM) -->
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>parent-bom</artifactId>
+            <version>1.0.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+            </plugin>
+
+            <!-- VULNERABLE: Old plugin versions -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version> <!-- Old version -->
+            </plugin>
+
+            <!-- VULNERABLE: Plugin with CVE -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version> <!-- Old version -->
+            </plugin>
+        </plugins>
+    </build>
+
+    <licenses>
+        <!-- VULNERABLE: No license specified -->
+    </licenses>
+
+    <developers>
+        <!-- VULNERABLE: No developer information -->
+    </developers>
+
+    <!-- VULNERABLE: Distribution management with hardcoded credentials -->
+    <!--
+    <distributionManagement>
+        <repository>
+            <id>internal-repo</id>
+            <url>https://repo.example.com/repository/maven-releases</url>
+            <username>deployUser</username>
+            <password>deployPassword123</password>
+        </repository>
+    </distributionManagement>
+    -->
+
+    <profiles>
+        <!-- VULNERABLE: Profile with vulnerable dependencies -->
+        <profile>
+            <id>production</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.struts</groupId>
+                    <artifactId>struts2-core</artifactId>
+                    <version>2.3.37</version> <!-- CVE-2017-5638 -->
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>
