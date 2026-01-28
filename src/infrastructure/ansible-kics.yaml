@@ -1,0 +1,208 @@
+# Ansible playbook with KICS-detectable vulnerabilities
+# KICS scans Ansible for security misconfigurations
+
+---
+- name: Ansible playbook with security vulnerabilities
+  hosts: all
+  become: yes
+
+  vars:
+    # VULNERABLE: KICS_ANSIBLE_HARDCODED_PASSWORD - Hardcoded password
+    db_password: "password123"
+
+    # VULNERABLE: KICS_ANSIBLE_HARDCODED_API_KEY - Hardcoded API key
+    api_key: "sk_live_1234567890abcdef"
+
+    # VULNERABLE: KICS_ANSIBLE_WORLD_READABLE_FILE - World-readable file permission
+    world_readable_mode: "0644"
+
+    # VULNERABLE: KICS_ANSIBLE_WORLD_WRITABLE_FILE - World-writable file permission
+    world_writable_mode: "0777"
+
+  tasks:
+    # VULNERABLE: KICS_ANSIBLE_UNENCRYPTED_SENSITIVE_DATA - Sensitive data not encrypted
+    - name: Create configuration with sensitive data
+      copy:
+        content: |
+          DB_PASSWORD={{ db_password }}
+          API_KEY={{ api_key }}
+        dest: /etc/app/config.env
+        mode: "{{ world_readable_mode }}"  # World-readable
+
+    # VULNERABLE: KICS_ANSIBLE_FILE_WITH_WORLD_PERMISSIONS - File with world permissions
+    - name: Create world-writable directory
+      file:
+        path: /tmp/world-writable
+        state: directory
+        mode: "{{ world_writable_mode }}"  # World-writable
+
+    # VULNERABLE: KICS_ANSIBLE_COMMAND_WITHOUT_CHECK_MODE - Command without check mode
+    - name: Execute dangerous command without check
+      command: rm -rf /tmp/*  # Dangerous without check mode
+      args:
+        warn: no  # Suppresses warning
+
+    # VULNERABLE: KICS_ANSIBLE_SHELL_WITHOUT_CHECK_MODE - Shell without check mode
+    - name: Execute shell command
+      shell: |
+        echo "Dangerous operation"
+        chmod 777 /var/www
+      args:
+        warn: no
+
+    # VULNERABLE: KICS_ANSIBLE_UNSAFE_LOGGING - Logging sensitive information
+    - name: Debug sensitive variable
+      debug:
+        var: db_password  # Logs sensitive data
+
+    # VULNERABLE: KICS_ANSIBLE_INSECURE_PACKAGE_MANAGER - Insecure package manager config
+    - name: Install packages without gpg check
+      yum:
+        name:
+          - nginx
+          - mysql-server
+        state: present
+        disable_gpg_check: yes  # Disables security check
+
+    # VULNERABLE: KICS_ANSIBLE_WORLD_READABLE_SSH_KEY - World-readable SSH key
+    - name: Copy SSH key with wrong permissions
+      copy:
+        src: /local/id_rsa
+        dest: /home/user/.ssh/id_rsa
+        mode: "0644"  # Should be 0600
+
+    # VULNERABLE: KICS_ANSIBLE_NO_LOG_FOR_SENSITIVE_TASK - Sensitive task without no_log
+    - name: Task with sensitive data (should have no_log)
+      command: echo "Password is {{ db_password }}"
+
+    # VULNERABLE: KICS_ANSIBLE_UNUSED_VARIABLE - Unused variable
+    - name: Set unused variable
+      set_fact:
+        unused_var: "this is never used"
+
+    # VULNERABLE: KICS_ANSIBLE_DEPRECATED_MODULE - Deprecated module usage
+    - name: Using deprecated module
+      # 'template' is not deprecated, but example pattern
+      # Real deprecated modules: ec2_facts, etc.
+      template:  # Example pattern
+        src: template.j2
+        dest: /etc/config
+
+    # VULNERABLE: KICS_ANSIBLE_INLINE_VAULT - Inline vault variable
+    - name: Task with inline vault (should be external)
+      debug:
+        msg: "Password is {{ vault_db_password }}"
+      vars:
+        vault_db_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66386439653236336462613266653035616264643861666366636534616264633333396365313662
+          3135383065353061656135313235313536653234653863340a626434346265393066333034613665
+
+    # VULNERABLE: KICS_ANSIBLE_WORLD_EXECUTABLE_FILE - World-executable file
+    - name: Create executable script
+      copy:
+        content: |
+          #!/bin/bash
+          echo "Hello"
+        dest: /usr/local/bin/world-executable.sh
+        mode: "0755"  # World-executable
+
+    # VULNERABLE: KICS_ANSIBLE_ROOT_USER_EXECUTION - Running as root unnecessarily
+    - name: Run as root when not needed
+      command: whoami
+      become: yes  # Unnecessary privilege escalation
+
+    # VULNERABLE: KICS_ANSIBLE_UNSAFE_FILE_OPERATION - Unsafe file operation
+    - name: Unsafe file copy
+      copy:
+        src: "{{ item }}"
+        dest: /tmp/
+      loop: "{{ lookup('fileglob', '/home/*/.ssh/*', wantlist=True) }}"  # Unsafe glob
+
+    # VULNERABLE: KICS_ANSIBLE_MISSING_WHEN - Task without when condition
+    - name: Always run task (should have when)
+      service:
+        name: nginx
+        state: restarted
+
+    # VULNERABLE: KICS_ANSIBLE_DEBUG_WITH_SECRETS - Debug with secrets
+    - name: Debug task showing secrets
+      debug:
+        msg: "API Key is {{ api_key }}"
+
+    # VULNERABLE: KICS_ANSIBLE_INVENTORY_FILE_WORLD_READABLE - World-readable inventory
+    - name: Create inventory file
+      copy:
+        content: |
+          [webservers]
+          server1 ansible_host=192.168.1.10 ansible_user=admin
+          server2 ansible_host=192.168.1.11 ansible_user=admin
+        dest: /etc/ansible/inventory.ini
+        mode: "0644"  # World-readable
+
+    # VULNERABLE: KICS_ANSIBLE_PLAIN_TEXT_PASSWORD - Plain text password in task
+    - name: Set MySQL password
+      mysql_user:
+        name: appuser
+        password: "plaintextpassword"  # Should use password_hash
+        priv: "*.*:ALL"
+        state: present
+
+    # VULNERABLE: KICS_ANSIBLE_UNENCRYPTED_VAULT - Unencrypted vault variable
+    - name: Task with unencrypted vault-like variable
+      debug:
+        msg: "Value is {{ unencrypted_vault }}"
+      vars:
+        unencrypted_vault: "secret_value"  # Looks like vault but isn't
+
+    # VULNERABLE: KICS_ANSIBLE_MISSING_BECOME_USER - Missing become_user when using become
+    - name: Run command with become but no become_user
+      command: systemctl restart nginx
+      become: yes  # Should specify become_user
+
+    # VULNERABLE: KICS_ANSIBLE_LOOSE_FILE_PERMISSIONS - Loose file permissions
+    - name: Create file with loose permissions
+      copy:
+        content: "config data"
+        dest: /etc/app/config
+        mode: "0666"  # Too permissive
+
+    # VULNERABLE: KICS_ANSIBLE_UNSAFE_LOOP - Unsafe loop with lookup
+    - name: Process files with unsafe lookup
+      copy:
+        src: "{{ item }}"
+        dest: /tmp/
+      loop: "{{ lookup('pipe', 'find /home -type f -name *.txt') }}"  # Unsafe pipe lookup
+
+    # Safe Ansible for comparison
+    # - name: Secure configuration
+    #   copy:
+    #     content: |
+    #       DB_PASSWORD={{ vault_db_password }}
+    #     dest: /etc/app/config.env
+    #     mode: "0600"
+    #     owner: appuser
+    #     group: appgroup
+    #   no_log: true  # Prevents logging
+    #   vars:
+    #     vault_db_password: "{{ lookup('env', 'DB_PASSWORD') }}"  # From environment
+    #
+    # - name: Secure directory
+    #   file:
+    #     path: /opt/app/data
+    #     state: directory
+    #     mode: "0750"
+    #     owner: appuser
+    #     group: appgroup
+    #
+    # - name: Install packages securely
+    #   yum:
+    #     name:
+    #       - nginx
+    #       - mysql-server
+    #     state: present
+    #     # disable_gpg_check: no  # Default is secure
+    #
+    # - name: Handle sensitive data
+    #   command: echo "Operation"
+    #   no_log: true  # Don't log command

@@ -109,6 +109,85 @@ resource "aws_db_instance" "vulnerable_rds" {
 # VULNERABLE: No CloudWatch alarms
 # VULNERABLE: No VPC flow logs
 
+# VULNERABLE: Azure Storage Account without encryption (for Terrascan/Checkov)
+/*
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_storage_account" "vulnerable_storage" {
+  name                     = "vulnerablestorage"
+  resource_group_name      = azurerm_resource_group.example.name
+  location                 = "eastus"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  # VULNERABLE: No encryption scope
+  # enable_https_traffic_only = false  # Should be true
+}
+
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "eastus"
+}
+*/
+
+# VULNERABLE: Google Cloud Storage Bucket without encryption (for Terrascan/Checkov)
+/*
+provider "google" {
+  project = "my-project"
+  region  = "us-central1"
+}
+
+resource "google_storage_bucket" "vulnerable_bucket" {
+  name          = "vulnerable-bucket"
+  location      = "US"
+  # VULNERABLE: No encryption
+  # VULNERABLE: Uniform bucket-level access disabled
+  uniform_bucket_level_access = false
+}
+*/
+
+# VULNERABLE: AWS ECR Repository without image scanning
+resource "aws_ecr_repository" "vulnerable_repo" {
+  name                 = "vulnerable-repo"
+  image_tag_mutability = "MUTABLE"
+
+  # VULNERABLE: No image scanning configuration
+  # image_scanning_configuration {
+  #   scan_on_push = true
+  # }
+}
+
+# VULNERABLE: AWS Lambda function without tracing
+resource "aws_lambda_function" "vulnerable_lambda" {
+  function_name = "vulnerable-lambda"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "index.handler"
+  runtime       = "python3.8"
+
+  # VULNERABLE: No tracing config
+  # tracing_config {
+  #   mode = "Active"
+  # }
+}
+
+resource "aws_iam_role" "lambda_role" {
+  name = "lambda-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
 # Safe Terraform configuration for comparison
 /*
 provider "aws" {

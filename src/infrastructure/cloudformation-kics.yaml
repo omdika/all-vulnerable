@@ -1,0 +1,285 @@
+# CloudFormation template with KICS-detectable vulnerabilities
+# KICS scans CloudFormation for security misconfigurations
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template with security vulnerabilities for KICS testing
+
+Parameters:
+  # VULNERABLE: KICS_CIDR_OPEN_ALL - Security group with open CIDR
+  MyIP:
+    Type: String
+    Default: 0.0.0.0/0  # Open to the world
+
+Resources:
+  # VULNERABLE: KICS_S3_BUCKET_ACL_ALLOWS_PUBLIC - S3 bucket with public ACL
+  PublicS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-public-bucket
+      AccessControl: PublicRead  # Allows public read access
+
+  # VULNERABLE: KICS_S3_BUCKET_VERSIONING_DISABLED - S3 bucket without versioning
+  NoVersioningBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-no-versioning-bucket
+      VersioningConfiguration:
+        Status: Suspended  # Versioning disabled
+
+  # VULNERABLE: KICS_S3_BUCKET_WITHOUT_ENCRYPTION - S3 bucket without encryption
+  UnencryptedBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-unencrypted-bucket
+      # No encryption configuration
+
+  # VULNERABLE: KICS_IAM_POLICY_WILDCARD_ACTION - IAM policy with wildcard actions
+  WildcardPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: wildcard-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: '*'  # Wildcard action
+            Resource: '*'
+      Users:
+        - Ref: MyUser
+
+  MyUser:
+    Type: AWS::IAM::User
+
+  # VULNERABLE: KICS_IAM_POLICY_WILDCARD_RESOURCE - IAM policy with wildcard resource
+  WildcardResourcePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: wildcard-resource-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: s3:GetObject
+            Resource: '*'  # Wildcard resource
+      Users:
+        - Ref: MyUser
+
+  # VULNERABLE: KICS_SECURITY_GROUP_ALL_PORTS_OPEN - Security group allowing all ports
+  OpenSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group allowing all traffic
+      SecurityGroupIngress:
+        - IpProtocol: -1  # All protocols
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  # VULNERABLE: KICS_RDS_PUBLICLY_ACCESSIBLE - RDS instance publicly accessible
+  PublicRDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: my-public-db
+      AllocatedStorage: 20
+      DBInstanceClass: db.t2.micro
+      Engine: mysql
+      MasterUsername: admin
+      MasterUserPassword: password123  # Hardcoded password
+      PubliclyAccessible: true  # Publicly accessible
+
+  # VULNERABLE: KICS_RDS_WITHOUT_ENCRYPTION - RDS instance without encryption
+  UnencryptedRDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: my-unencrypted-db
+      AllocatedStorage: 20
+      DBInstanceClass: db.t2.micro
+      Engine: postgres
+      MasterUsername: admin
+      MasterUserPassword: password123
+      StorageEncrypted: false  # No encryption
+
+  # VULNERABLE: KICS_LAMBDA_WITHOUT_TRACING - Lambda function without X-Ray tracing
+  NoTracingLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: no-tracing-lambda
+      Runtime: python3.8
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              return {"statusCode": 200}
+      TracingConfig:
+        Mode: PassThrough  # Should be Active
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: lambda-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+  # VULNERABLE: KICS_ELB_WITHOUT_ACCESS_LOGGING - ELB without access logging
+  NoLoggingELB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: no-logging-elb
+      Type: application
+      Subnets:
+        - subnet-12345678
+      # No access logging configuration
+
+  # VULNERABLE: KICS_CLOUDFRONT_WITHOUT_LOGGING - CloudFront without logging
+  NoLoggingCloudFront:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultCacheBehavior:
+          TargetOriginId: origin
+          ViewerProtocolPolicy: allow-all
+          ForwardedValues:
+            QueryString: false
+        Origins:
+          - Id: origin
+            DomainName: example.com
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+        # No logging configuration
+
+  # VULNERABLE: KICS_API_GATEWAY_WITHOUT_ACCESS_LOGGING - API Gateway without logging
+  NoLoggingAPIGateway:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: prod
+      RestApiId: !Ref MyApi
+      DeploymentId: !Ref MyDeployment
+      # No access logging settings
+
+  MyApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: my-api
+
+  MyDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref MyApi
+      StageName: prod
+
+  # VULNERABLE: KICS_EC2_WITHOUT_EBS_ENCRYPTION - EC2 instance without EBS encryption
+  UnencryptedEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0c55b159cbfafe1f0
+      # No EBS encryption
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 8
+            VolumeType: gp2
+            # No encrypted property
+
+  # VULNERABLE: KICS_DYNAMODB_WITHOUT_PITR - DynamoDB without point-in-time recovery
+  NoPITRDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: no-pitr-table
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      # No point-in-time recovery specification
+
+  # VULNERABLE: KICS_KMS_KEY_ROTATION_DISABLED - KMS key without rotation
+  NoRotationKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: KMS key without rotation
+      Enabled: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Id: key-policy
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action: kms:*
+            Resource: '*'
+      # No EnableKeyRotation property
+
+  # VULNERABLE: KICS_S3_BUCKET_POLICY_ALLOWS_PUBLIC - S3 bucket policy allows public access
+  PublicBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PublicS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub 'arn:aws:s3:::${PublicS3Bucket}/*'
+
+  # VULNERABLE: KICS_EC2_INSTANCE_WITHOUT_IMDSV2 - EC2 instance without IMDSv2
+  EC2WithoutIMDSv2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0c55b159cbfafe1f0
+      # No MetadataOptions for IMDSv2
+
+  # VULNERABLE: KICS_LAMBDA_WITHOUT_DLQ - Lambda function without dead letter queue
+  LambdaWithoutDLQ:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: no-dlq-lambda
+      Runtime: python3.8
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              return {"statusCode": 200}
+      # No DeadLetterConfig
+
+Outputs:
+  # VULNERABLE: KICS_OUTPUT_WITHOUT_DESCRIPTION - Output without description
+  BucketName:
+    Value: !Ref PublicS3Bucket
+    # No description
+
+  # Safe CloudFormation for comparison
+  # ...
+  # Resources should have:
+  # - Encryption enabled
+  # - Proper access controls
+  # - Logging enabled
+  # - Non-public configurations
+  # - No hardcoded credentials
+  # - Proper IAM policies

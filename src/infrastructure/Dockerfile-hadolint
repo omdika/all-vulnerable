@@ -1,0 +1,172 @@
+# Dockerfile with Hadolint-detectable violations
+# Hadolint focuses on Dockerfile best practices and security
+
+# VULNERABLE: DL3006 - Always tag the version of an image explicitly
+FROM ubuntu:latest
+
+# VULNERABLE: DL3008 - Pin versions in apt get install
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    python3 \
+    # VULNERABLE: DL3015 - Avoid additional packages by specifying `--no-install-recommends`
+    && rm -rf /var/lib/apt/lists/*
+
+# VULNERABLE: DL3025 - Use arguments JSON notation for CMD and ENTRYPOINT arguments
+CMD python3 /app/app.py
+
+# VULNERABLE: DL3009 - Delete the apt-get lists after installing something
+# Already "fixed" but often missed in complex RUN statements
+
+# VULNERABLE: DL3016 - Pin versions in pip
+RUN pip3 install Django Flask requests
+
+# VULNERABLE: DL3020 - Use COPY instead of ADD for files and folders
+ADD https://example.com/archive.tar.gz /tmp/
+
+# VULNERABLE: DL3021 - COPY with more than 2 arguments requires the last argument to end with /
+COPY file1 file2 file3 /app/
+
+# VULNERABLE: DL3022 - COPY --from should reference a previously defined FROM alias
+COPY --from=0 /etc/passwd /tmp/
+
+# VULNERABLE: DL3023 - COPY --from cannot reference its own FROM alias
+# (This example would be invalid but shows the pattern)
+
+# VULNERABLE: DL3024 - FROM aliases (stage names) must be unique
+FROM alpine:latest AS builder
+RUN echo "building"
+
+FROM ubuntu:latest AS builder  # Duplicate alias
+RUN echo "another build"
+
+# VULNERABLE: DL3025 - Use arguments JSON notation for CMD and ENTRYPOINT arguments
+ENTRYPOINT python3 /app/app.py --debug
+
+# VULNERABLE: DL3026 - Use only an allowed list of instructions in the build stage
+ONBUILD RUN echo "This will run later"
+ONBUILD COPY . /app
+
+# VULNERABLE: DL3027 - Do not use apt-get upgrade or dist-upgrade
+RUN apt-get upgrade -y
+
+# VULNERABLE: DL3028 - Pin versions in apk add
+RUN apk add --no-cache \
+    python3 \
+    py3-pip
+
+# VULNERABLE: DL3029 - Do not use --update switch in apk add
+RUN apk add --update python3
+
+# VULNERABLE: DL3030 - Use the `-y` switch to avoid manual input `yum install -y <package>`
+RUN yum install httpd
+
+# VULNERABLE: DL3031 - Do not use yum update
+RUN yum update -y
+
+# VULNERABLE: DL3032 - `yum clean all` missing after yum command
+RUN yum install -y nginx
+
+# VULNERABLE: DL3033 - Specify version with `yum install -y <package>-<version>`
+RUN yum install -y nginx
+
+# VULNERABLE: DL3034 - Do not use yum update
+# Already covered
+
+# VULNERABLE: DL3035 - Do not use yum update
+# Already covered
+
+# VULNERABLE: DL3036 - libpq-dev is not needed in runtime for python:3.x images
+# Not applicable but example of specific advice
+
+# VULNERABLE: DL3037 - Specify version with `dnf install -y <package>-<version>`
+RUN dnf install -y httpd
+
+# VULNERABLE: DL3038 - Use the `-y` switch to avoid manual input with dnf
+RUN dnf install httpd
+
+# VULNERABLE: DL3039 - Do not use dnf update
+RUN dnf update -y
+
+# VULNERABLE: DL3040 - `dnf clean all` missing after dnf command
+RUN dnf install -y mariadb
+
+# VULNERABLE: DL3041 - Specify version with `zypper install -y <package>=<version>`
+RUN zypper install -y nginx
+
+# VULNERABLE: DL3042 - Avoid the use of cache directory with zypper
+RUN zypper --non-interactive install nginx
+
+# VULNERABLE: DL3043 - `zypper clean` missing
+RUN zypper install -y apache2
+
+# VULNERABLE: DL3044 - Do not use latest tag
+# Already at top
+
+# VULNERABLE: DL3045 - `COPY --chown` should be used
+COPY app.py /app/app.py
+
+# VULNERABLE: DL3046 - `USER` should not be root
+USER root
+
+# VULNERABLE: DL3047 - `WORKDIR` path should be absolute
+WORKDIR app
+
+# VULNERABLE: DL3048 - Invalid label schema
+LABEL version="1.0"
+
+# VULNERABLE: DL3049 - `MAINTAINER` is deprecated
+MAINTAINER John Doe <john@example.com>
+
+# VULNERABLE: DL3050 - `SHELL` is not supported
+SHELL ["/bin/bash", "-c"]
+
+# VULNERABLE: DL3051 - `STOPSIGNAL` is not supported
+STOPSIGNAL SIGKILL
+
+# VULNERABLE: DL3052 - `HEALTHCHECK` is not supported
+# Missing HEALTHCHECK
+
+# VULNERABLE: DL3053 - `ARG` should have a default value
+ARG BUILD_VERSION
+
+# VULNERABLE: DL3054 - `ONBUILD` instructions should be avoided
+ONBUILD RUN echo "Building from base image"
+
+# VULNERABLE: DL3055 - `EXPOSE` should only expose necessary ports
+EXPOSE 80 443 8080 3000 5000
+
+# VULNERABLE: DL3056 - Multiple `CMD` instructions
+CMD ["python3", "app.py"]
+CMD ["bash"]
+
+# VULNERABLE: DL3057 - `ENTRYPOINT` and `CMD` both defined
+ENTRYPOINT ["python3"]
+CMD ["app.py"]
+
+# VULNERABLE: DL3058 - `WORKDIR` should not be `/`
+WORKDIR /
+
+# VULNERABLE: DL3059 - Multiple `FROM` instructions
+FROM alpine:latest as test
+RUN echo "test"
+
+# VULNERABLE: DL3060 - `VOLUME` should be used carefully
+VOLUME ["/data"]
+
+# VULNERABLE: DL3061 - `USER` should be numeric
+USER nobody
+
+# Safe Dockerfile for comparison
+# FROM ubuntu:20.04
+# RUN apt-get update && apt-get install -y \
+#     curl=7.68.0-1ubuntu2 \
+#     wget=1.20.3-1ubuntu1 \
+#     && rm -rf /var/lib/apt/lists/*
+# COPY --chown=1000:1000 . /app
+# WORKDIR /app
+# USER 1000
+# EXPOSE 8080
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+#     CMD curl -f http://localhost:8080/health || exit 1
+# CMD ["python3", "app.py"]

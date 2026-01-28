@@ -126,6 +126,96 @@ subjects:
   name: default
   namespace: default  # VULNERABLE: Binding default service account to admin role
 ---
+# VULNERABLE: Kubernetes Ingress without TLS
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vulnerable-ingress
+spec:
+  rules:
+  - host: vulnerable.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: vulnerable-service
+            port:
+              number: 80
+  # No TLS configuration
+
+---
+# VULNERABLE: Container with hostPort exposed
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostport-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+      hostPort: 8080  # Exposes port on host
+
+---
+# VULNERABLE: Pod with hostNetwork
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostnetwork-pod
+spec:
+  hostNetwork: true  # Shares host network namespace
+  containers:
+  - name: busybox
+    image: busybox:latest
+    command: ["sleep", "3600"]
+
+---
+# VULNERABLE: Pod with hostPID
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpid-pod
+spec:
+  hostPID: true  # Shares host PID namespace
+  containers:
+  - name: busybox
+    image: busybox:latest
+    command: ["sleep", "3600"]
+
+---
+# VULNERABLE: Pod with hostIPC
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostipc-pod
+spec:
+  hostIPC: true  # Shares host IPC namespace
+  containers:
+  - name: busybox
+    image: busybox:latest
+    command: ["sleep", "3600"]
+
+---
+# VULNERABLE: Secret in environment variable (still detectable)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-env-pod
+spec:
+  containers:
+  - name: app
+    image: myapp:latest
+    env:
+    - name: TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: vulnerable-secret
+          key: apikey
+
+---
 # Safe Kubernetes manifests for comparison
 ---
 apiVersion: v1
