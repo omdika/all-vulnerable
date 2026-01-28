@@ -1,0 +1,99 @@
+{
+  "name": "dustilock-vulnerable-app",
+  "version": "1.0.0",
+  "description": "Package.json with supply chain vulnerabilities detectable by DustiLock",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    // VULNERABLE (DustiLock): Typosquatting packages
+    "crossenv": "1.0.0",              // Malicious typosquat of cross-env
+    "requrest": "2.88.0",             // Typo of request
+    "momen": "2.29.0",                // Typo of moment
+    "lodashs": "4.17.10",             // Typo of lodash
+    "expresss": "4.16.0",             // Typo of express
+    "faker": "4.1.0",                 // Actual package, but similar to malicious faker-js
+    "fake-js": "1.0.0",               // Hypothetical malicious package
+
+    // VULNERABLE (DustiLock): Dependency confusion (private package names published publicly)
+    "@company-private/logger": "1.0.0",      // Could be confused with public package
+    "internal-auth-library": "1.0.0",        // Common internal package name
+    "company-config": "1.0.0",               // Generic internal package name
+
+    // VULNERABLE (DustiLock): Packages with known malicious code
+    "flatmap-stream": "0.1.0",        // Known malicious package from event-stream incident
+    "event-stream": "3.3.6",          // Package that was compromised
+    "eslint-config-airbnb-standard": "1.0.0", // Hypothetical malicious package
+
+    // VULNERABLE (DustiLock): Packages with suspicious post-install scripts
+    "suspicious-package": "1.0.0",    // Hypothetical package with postinstall script
+    "data-collector": "1.0.0",        // Hypothetical package that collects data
+    "analytics-package": "1.0.0",     // Hypothetical package with telemetry
+
+    // VULNERABLE (DustiLock): Packages from untrusted registries
+    "untrusted-package": "http://malicious-registry.com/package.tgz",
+    "untrusted-scoped": "@malicious/package",
+    "git-package": "git+https://github.com/suspicious/repo.git",
+
+    // VULNERABLE (DustiLock): Packages with obfuscated code
+    "obfuscated-package": "1.0.0",    // Hypothetical package with minified/obfuscated code
+    "minified-package": "1.0.0",      // Package with only minified code in repo
+
+    // VULNERABLE (DustiLock): Packages with recently transferred ownership
+    "recently-transferred": "1.0.0",  // Package that changed maintainers recently
+    "abandoned-package": "1.0.0",     // Package marked as deprecated/abandoned
+
+    // VULNERABLE (DustiLock): Packages with fake popularity metrics
+    "fake-popular-package": "1.0.0",  // Package with artificially inflated download counts
+    "star-boosted-package": "1.0.0",  // Package with fake GitHub stars
+
+    // VULNERABLE (DustiLock): Packages that impersonate legitimate packages
+    "react-native": "0.60.0",         // Legitimate, but could be impersonated
+    "babel-core": "6.26.3",           // Legitimate, but could be impersonated
+    "webpack": "4.46.0",              // Legitimate, but could be impersonated
+
+    // VULNERABLE (DustiLock): Packages with malicious dependencies
+    "innocent-package": "1.0.0",      // Depends on malicious-package
+    "wrapper-package": "1.0.0",       // Wraps a malicious package
+
+    // VULNERABLE (DustiLock): Packages with environment-specific malicious code
+    "env-aware-package": "1.0.0",     // Behaves differently in CI vs development
+    "ci-only-package": "1.0.0"        // Only activates in CI environments
+  },
+  "devDependencies": {
+    // VULNERABLE (DustiLock): Dev packages with supply chain risks
+    "malicious-test-runner": "1.0.0", // Hypothetical malicious test runner
+    "build-tool-with-backdoor": "1.0.0", // Hypothetical compromised build tool
+    "code-coverage-backdoor": "1.0.0",   // Hypothetical coverage tool with backdoor
+
+    // VULNERABLE (DustiLock): Packages that download and execute binaries
+    "phantomjs-prebuilt": "2.1.0",    // Downloads PhantomJS binary
+    "selenium-webdriver": "3.6.0",    // Downloads browser drivers
+    "node-gyp": "3.8.0"               // Downloads and compiles native code
+  },
+  "optionalDependencies": {
+    // VULNERABLE (DustiLock): Optional packages with malicious code
+    "optional-malware": "1.0.0",      // Hypothetical malicious optional package
+    "conditional-backdoor": "1.0.0"   // Only installed on specific conditions
+  },
+  "peerDependencies": {
+    // VULNERABLE (DustiLock): Peer dependencies that could be malicious
+    "react": "16.14.0",
+    "react-dom": "16.14.0"
+  },
+  "engines": {
+    "node": ">= 10.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/dustilock-vulnerable-app.git"
+  },
+  "publishConfig": {
+    // VULNERABLE (DustiLock): Publishing to public registry when internal
+    "registry": "https://registry.npmjs.org/"
+  }
+}

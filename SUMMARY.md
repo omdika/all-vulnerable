@@ -44,6 +44,15 @@ checkov -d src/infrastructure/
 - **requirements.txt**: Vulnerable dependencies, unpinned versions
 - **pom.xml**: Old library versions with known vulnerabilities
 
+### 🔍 SCA (Software Composition Analysis)
+- **Black Duck**: License compliance, known CVEs
+- **Checkmarx SCA**: Risky dependency patterns
+- **GitHub Dependabot**: Automated security updates
+- **GitLab Dependency Scanning**: Integrated CI/CD scanning
+- **DustiLock**: Supply chain security, typosquatting
+- **OWASP Dependency-Check**: CVE detection across languages
+- **Trivy-SCA**: Comprehensive vulnerability scanning
+
 ## Supported SAST Tools
 
 | Tool | Primary Languages | Infrastructure | Dependencies |
@@ -59,6 +68,18 @@ checkov -d src/infrastructure/
 | Checkov | Terraform, Kubernetes, Docker | Yes | No |
 | Kiuwan | Java, .NET, etc. | Limited | Limited |
 | SonarQube | Multiple languages | Limited | Yes |
+
+## Supported SCA Tools
+
+| Tool | Primary Languages | Infrastructure | Dependencies |
+|------|-------------------|----------------|--------------|
+| Black Duck | Multiple languages | No | Yes |
+| Checkmarx SCA | Multiple languages | No | Yes |
+| GitHub Dependabot | Multiple languages | No | Yes |
+| GitLab Dependency Scanning | Multiple languages | No | Yes |
+| DustiLock | Node.js, Python, etc. | No | Yes |
+| OWASP Dependency-Check | Java, .NET, Node.js, Python, etc. | No | Yes |
+| Trivy-SCA | Multiple languages | No | Yes |
 
 ## Vulnerability Catalog
 

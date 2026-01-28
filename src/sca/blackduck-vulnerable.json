@@ -1,0 +1,74 @@
+{
+  "name": "blackduck-vulnerable-app",
+  "version": "1.0.0",
+  "description": "Package.json with vulnerabilities detectable by Black Duck",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    // VULNERABLE (Black Duck): Packages with license compliance issues
+    "gpl-licensed-package": "1.0.0",  // GPL-3.0 license (copyleft)
+    "agpl-licensed-package": "2.0.0", // AGPL-3.0 license (strong copyleft)
+    "proprietary-package": "1.0.0",   // Proprietary license
+    "unlicensed-package": "1.0.0",    // No license specified
+
+    // VULNERABLE (Black Duck): Packages with known CVEs (from Black Duck KB)
+    "lodash": "4.17.10",              // CVE-2018-16487, CVE-2019-10744
+    "minimist": "0.0.8",              // CVE-2020-7598
+    "hoek": "4.2.0",                  // CVE-2018-3728
+    "async": "1.5.2",                 // CVE-2017-16016
+    "debug": "2.6.0",                 // CVE-2017-16137
+    "express": "4.16.0",              // Multiple CVEs in older versions
+
+    // VULNERABLE (Black Duck): Out-of-support packages
+    "node-sass": "4.14.0",            // Deprecated, use sass
+    "request": "2.88.0",              // Deprecated package
+    "phantomjs": "2.1.0",             // Deprecated, security issues
+
+    // VULNERABLE (Black Duck): Packages with conflicting licenses
+    "mit-package": "1.0.0",           // MIT license
+    "apache-package": "2.0.0",        // Apache-2.0 license
+    "bsd-package": "3.0.0",           // BSD-3-Clause license
+
+    // VULNERABLE (Black Duck): Packages with ambiguous license declarations
+    "ambiguous-license-package": "1.0.0", // License field contains "SEE LICENSE IN FILE"
+    "multiple-license-package": "2.0.0",  // License field contains "(MIT OR GPL-3.0)"
+
+    // VULNERABLE (Black Duck): Packages with license changes between versions
+    "license-change-package": "1.0.0",    // Changed from MIT to GPL in later versions
+
+    // VULNERABLE (Black Duck): Packages with patent risks
+    "patent-encumbered-package": "1.0.0"  // Package with patent claims
+  },
+  "devDependencies": {
+    // VULNERABLE (Black Duck): Development packages with CVEs
+    "webpack": "4.46.0",              // Old version with vulnerabilities
+    "babel-core": "6.26.3",           // Old version
+    "jest": "24.9.0",                 // Old version
+    "mocha": "6.2.3",                 // Old version
+
+    // VULNERABLE (Black Duck): Build tools with restrictive licenses
+    "gpl-build-tool": "1.0.0"         // GPL-licensed build tool
+  },
+  "optionalDependencies": {
+    // VULNERABLE (Black Duck): Optional packages with license risks
+    "optional-gpl-package": "1.0.0"   // Optional GPL dependency
+  },
+  "peerDependencies": {
+    // VULNERABLE (Black Duck): Peer dependencies with license conflicts
+    "react": "16.14.0",               // MIT license
+    "react-dom": "16.14.0"            // MIT license
+  },
+  "engines": {
+    "node": ">= 8.0.0",               // VULNERABLE (Black Duck): Old Node.js version (EOL)
+    "npm": ">= 5.0.0"                 // Old npm version
+  },
+  "license": "UNLICENSED",            // VULNERABLE (Black Duck): No license specified for project
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/blackduck-vulnerable-app.git"
+  },
+  "private": true
+}

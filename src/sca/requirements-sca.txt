@@ -1,0 +1,115 @@
+# Python requirements with SCA-detectable vulnerabilities
+# This file contains vulnerabilities detectable by SCA tools like:
+# - Black Duck
+# - Checkmarx SCA
+# - GitHub Dependabot
+# - GitLab Dependency Scanning
+# - DustiLock
+# - OWASP Dependency-Check
+# - Trivy-SCA
+
+# VULNERABLE (SCA): Packages with known CVEs
+Django==1.11.0          # CVE-2019-19844, CVE-2020-7471, CVE-2021-33203
+Flask==0.12.0           # CVE-2018-1000656
+requests==2.18.0        # CVE-2018-18074
+urllib3==1.21.1         # CVE-2018-20060
+pyyaml==3.13            # CVE-2017-18342
+cryptography==2.5       # Multiple CVEs
+paramiko==2.4.2         # CVE-2018-7750
+tensorflow==1.13.1      # Multiple CVEs
+numpy==1.16.0           # CVE-2019-6446, CVE-2019-6447
+pandas==0.20.0          # Old version with vulnerabilities
+jinja2==2.10            # CVE-2019-10906
+werkzeug==0.14.1        # CVE-2019-14806
+celery==4.1.0           # CVE-2019-11384
+
+# VULNERABLE (SCA): Packages with license compliance issues
+gpl-library==1.0.0      # GPL-3.0 license
+agpl-tool==2.0.0        # AGPL-3.0 license
+proprietary-package==1.0.0  # Proprietary license
+unlicensed-package==1.0.0   # No license
+
+# VULNERABLE (SCA): Packages with deprecated/abandoned status
+deprecated-package==0.1.0
+abandoned-lib==1.2.3
+legacy-support==0.9.0
+
+# VULNERABLE (SCA): Typosquatting packages
+requrests==2.25.1       # Typo of 'requests'
+pyyaml==5.4.1           # Legitimate but old
+django-debug-toolbar==1.0  # Could be confused with malicious package
+
+# VULNERABLE (SCA): Direct Git references without commit hashes
+git+https://github.com/user/unpinned-repo.git
+git+https://github.com/another/private-repo@v1.0.0
+git+https://github.com/untrusted/repo.git#master
+
+# VULNERABLE (SCA): Local file dependencies
+./local-package/
+../relative-path/
+file:///tmp/package.tar.gz
+
+# VULNERABLE (SCA): Packages from untrusted indexes
+--index-url http://untrusted-index.example.com/simple/
+--trusted-host untrusted-index.example.com
+untrusted-package==1.0.0
+
+# VULNERABLE (SCA): Packages with conflicting licenses
+mit-licensed==2.0.0     # MIT license
+apache-licensed==1.5.0  # Apache-2.0 license
+gpl-conflicting==3.0.0  # GPL-3.0 license
+
+# VULNERABLE (SCA): Development packages in production requirements
+pytest==4.6.0           # Testing framework
+coverage==4.5.0         # Code coverage
+flake8==3.7.0           # Linter
+mypy==0.720             # Type checker
+
+# VULNERABLE (SCA): Packages with known supply chain attacks
+# Hypothetical examples
+malicious-package==1.0.0
+compromised-lib==2.1.0
+backdoor-package==1.0.0
+
+# VULNERABLE (SCA): Unpinned versions
+Django>=1.11.0          # Range instead of pinned
+Flask                   # No version specified
+requests>=2.0,<3.0      # Version range
+
+# VULNERABLE (SCA): Duplicate packages
+Django==1.11.0
+django==2.2.0           # Case-sensitive duplicate (won't install but shows in SCA)
+
+# VULNERABLE (SCA): Packages with incorrect version specifiers
+bad-specifier-package>= # Invalid specifier
+another-bad-package==   # Incomplete version
+
+# VULNERABLE (SCA): Packages with environment markers that might be ignored
+pywin32==227; sys_platform == 'win32'  # Windows-only package, might be flagged
+futures==3.3.0; python_version < '3.2' # Python 2 only
+
+# VULNERABLE (SCA): Packages with vulnerable transitive dependencies
+# (These packages depend on vulnerable packages)
+django-rest-framework==3.9.0  # Depends on old Django
+celery-with-redis==4.1.0      # Depends on old celery
+
+# VULNERABLE (SCA): Packages with CVE fixes available
+# These have newer versions that fix vulnerabilities
+Django==2.2.0           # Fixed in 2.2.28, 3.2.x
+Flask==1.0.0            # Fixed in 1.1.x, 2.0.x
+requests==2.22.0        # Fixed in 2.28.x
+
+# Safe requirements example (commented out)
+"""
+# requirements-safe.txt
+Django==3.2.0
+Flask==2.0.0
+requests==2.28.0
+urllib3==1.26.0
+cryptography==36.0.0
+
+# Pinned versions only
+# No Git or local references
+# Trusted indexes only
+# Separate dev requirements
+"""

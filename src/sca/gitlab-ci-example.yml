@@ -1,0 +1,93 @@
+# Example GitLab CI configuration with Dependency Scanning
+# This file shows how GitLab Dependency Scanning can be configured
+# The vulnerabilities are in the package.json file, not in this config
+
+stages:
+  - test
+  - security
+
+variables:
+  # VULNERABLE: Using outdated analyzer image
+  DS_IMAGE: "registry.gitlab.com/gitlab-org/security-products/dependency-scanning:10"
+
+  # VULNERABLE: Disabling certain checks
+  DS_EXCLUDED_PATHS: "node_modules,*.min.js"
+
+  # VULNERABLE: Setting low severity threshold
+  DS_SEVERITY: "HIGH"  # Should be "CRITICAL" or include all
+
+# VULNERABLE: Missing dependency scanning job
+# dependency_scanning:
+#   stage: security
+#   script:
+#     - echo "Dependency scanning would run here"
+
+# VULNERABLE: Incorrectly configured dependency scanning job
+dependency_scanning:
+  stage: security
+  image:
+    name: "$DS_IMAGE"
+    entrypoint: [""]
+  variables:
+    # VULNERABLE: Excluding too many paths
+    DS_EXCLUDED_PATHS: "src,lib,test,node_modules,*.min.js,*.bundle.js"
+
+    # VULNERABLE: Ignoring license checks
+    DS_DISABLE_LICENSE_CHECK: "true"
+
+    # VULNERABLE: Using custom CA bundle that might be insecure
+    DS_CA_CERT: "/etc/gitlab-runner/certs/ca.crt"
+  script:
+    - /analyzer run
+  artifacts:
+    reports:
+      dependency_scanning: gl-dependency-scanning-report.json
+    # VULNERABLE: Artifacts set to expire quickly
+    expire_in: 1 hour
+  rules:
+    # VULNERABLE: Only run on main branch, missing other branches
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# VULNERABLE: Separate job for outdated dependencies (not using official template)
+check_outdated_deps:
+  stage: test
+  image: node:14-alpine
+  script:
+    # VULNERABLE: Using npm outdated without security checks
+    - npm outdated || true
+    # VULNERABLE: Not failing the job when vulnerabilities found
+    - echo "Continuing despite outdated dependencies"
+  allow_failure: true  # VULNERABLE: Allowing failure
+
+# VULNERABLE: Manual dependency update job (requires manual intervention)
+manual_dependency_update:
+  stage: security
+  image: node:14-alpine
+  script:
+    - npm update
+  when: manual  # VULNERABLE: Manual updates delay fixes
+  allow_failure: true
+
+# VULNERABLE: Missing license scanning job
+# license_scanning:
+#   stage: security
+#   script:
+#     - echo "License scanning would run here"
+
+# VULNERABLE: No notification on vulnerability detection
+# No webhook or Slack notification configured
+
+# Safe configuration example (commented out)
+"""
+include:
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+
+variables:
+  DS_SEVERITY: "CRITICAL,HIGH,MEDIUM,LOW,INFO"
+  DS_EXCLUDED_PATHS: ""
+  DS_IMAGE_SUFFIX: ""
+
+dependency_scanning:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+"""

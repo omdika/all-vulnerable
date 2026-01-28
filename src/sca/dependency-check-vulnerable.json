@@ -1,0 +1,83 @@
+{
+  "name": "dependency-check-vulnerable-app",
+  "version": "1.0.0",
+  "description": "Package.json with vulnerabilities detectable by OWASP Dependency-Check",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    // VULNERABLE (OWASP Dependency-Check): Packages with CVEs in NVD
+    "lodash": "4.17.10",              // CVE-2018-16487, CVE-2019-10744
+    "minimist": "0.0.8",              // CVE-2020-7598
+    "hoek": "4.2.0",                  // CVE-2018-3728
+    "debug": "2.6.0",                 // CVE-2017-16137
+    "express": "4.16.0",              // Multiple CVEs
+    "mongoose": "5.7.0",              // CVE-2019-10788
+    "handlebars": "4.0.0",            // CVE-2019-19919
+    "axios": "0.18.0",                // CVE-2019-10742
+    "serialize-javascript": "1.5.0",  // CVE-2019-16769
+    "jsonwebtoken": "8.5.0",          // CVE-2022-23529
+    "validator": "10.11.0",           // CVE-2021-3765
+    "uglify-js": "2.8.0",             // CVE-2015-8858
+    "moment": "2.18.0",               // Multiple CVEs in older versions
+    "request": "2.88.0",              // Multiple CVEs
+
+    // VULNERABLE (OWASP Dependency-Check): Packages with EPSS high scores
+    "log4js": "4.0.0",                // Similar to log4j (example)
+    "node-serialize": "0.0.4",        // CVE-2017-5941
+
+    // VULNERABLE (OWASP Dependency-Check): Packages with known exploits
+    "flatmap-stream": "0.1.0",        // Known malicious package
+    "event-stream": "3.3.6",          // Compromised package
+
+    // VULNERABLE (OWASP Dependency-Check): Packages with vulnerable transitive dependencies
+    "babel-preset-env": "1.6.0",      // Depends on old core-js
+    "webpack-dev-server": "2.11.0",   // Depends on old sockjs
+    "eslint-plugin-react": "7.0.0",   // Depends on old eslint
+
+    // VULNERABLE (OWASP Dependency-Check): Packages from untrusted sources
+    "git-package": "git+https://github.com/untrusted/repo.git",
+    "local-package": "file:../local-package",
+    "http-package": "http://example.com/package.tgz",
+
+    // VULNERABLE (OWASP Dependency-Check): Packages without version pins
+    "wildcard-package": "*",
+    "latest-package": "latest",
+
+    // VULNERABLE (OWASP Dependency-Check): Duplicate packages with different versions
+    "lodash": "4.17.10",
+    "lodash-old": "3.10.1"
+  },
+  "devDependencies": {
+    // VULNERABLE (OWASP Dependency-Check): Dev packages with CVEs
+    "webpack": "4.46.0",              // Old version with vulnerabilities
+    "jest": "24.9.0",                 // Old version
+    "mocha": "6.2.3",                 // Old version
+    "gulp": "3.9.0",                  // Old version
+
+    // VULNERABLE (OWASP Dependency-Check): Build tools with vulnerabilities
+    "node-gyp": "3.8.0",              // Old version
+    "phantomjs-prebuilt": "2.1.0"     // Old version
+  },
+  "optionalDependencies": {
+    // VULNERABLE (OWASP Dependency-Check): Optional packages with CVEs
+    "fsevents": "1.2.13",             // Old version
+    "sqlite3": "4.0.0"                // Old version
+  },
+  "peerDependencies": {
+    // VULNERABLE (OWASP Dependency-Check): Peer dependencies with CVEs
+    "react": "16.13.0",
+    "react-dom": "16.13.0"
+  },
+  "engines": {
+    "node": ">= 8.0.0",               // Old Node.js version with vulnerabilities
+    "npm": ">= 5.0.0"                 // Old npm version
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/dependency-check-vulnerable-app.git"
+  }
+}

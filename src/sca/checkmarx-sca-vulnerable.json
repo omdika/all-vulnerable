@@ -1,0 +1,88 @@
+{
+  "name": "checkmarx-sca-vulnerable-app",
+  "version": "1.0.0",
+  "description": "Package.json with vulnerabilities detectable by Checkmarx SCA",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    // VULNERABLE (Checkmarx SCA): Direct Git references without commit hashes
+    "git-package": "git+https://github.com/user/repo.git",
+    "git-package-branch": "git+https://github.com/user/repo.git#develop",
+    "git-package-tag": "git+https://github.com/user/repo.git#v1.0.0",
+
+    // VULNERABLE (Checkmarx SCA): Local file dependencies
+    "local-package": "file:../local-package",
+    "local-tarball": "file:/tmp/package.tgz",
+
+    // VULNERABLE (Checkmarx SCA): Unpinned versions (wildcards)
+    "wildcard-package": "*",
+    "latest-package": "latest",
+    "caret-package": "^1.0.0",
+    "tilde-package": "~1.0.0",
+
+    // VULNERABLE (Checkmarx SCA): Packages with known vulnerabilities
+    "lodash": "4.17.4",               // CVE-2018-16487
+    "minimist": "0.0.8",              // CVE-2020-7598
+    "debug": "2.6.0",                 // CVE-2017-16137
+    "express": "4.16.0",              // Multiple CVEs
+    "mongoose": "5.7.0",              // CVE-2019-10788
+    "moment": "2.18.0",               // Old version with vulnerabilities
+
+    // VULNERABLE (Checkmarx SCA): Packages with malicious code patterns
+    "flatmap-stream": "0.1.0",        // Known malicious package (example)
+    "event-stream": "3.3.6",          // Known for flatmap-stream attack
+
+    // VULNERABLE (Checkmarx SCA): Typosquatting packages
+    "crossenv": "1.0.0",              // Malicious typosquat of cross-env
+    "requrest": "2.88.0",             // Typo of request
+    "momen": "2.29.0",                // Typo of moment
+
+    // VULNERABLE (Checkmarx SCA): Packages from untrusted registries
+    "untrusted-package": "http://untrusted-registry.com/package.tgz",
+    "untrusted-scoped": "@untrusted/package",
+
+    // VULNERABLE (Checkmarx SCA): Packages with high risk permissions
+    "package-with-prebuild": "1.0.0", // Downloads and executes binaries
+    "node-gyp": "3.8.0",              // Build tool that executes scripts
+
+    // VULNERABLE (Checkmarx SCA): Packages with sensitive data in code
+    "package-with-secrets": "1.0.0",  // Hypothetical package that contains API keys
+
+    // VULNERABLE (Checkmarx SCA): Duplicate packages with different versions
+    "lodash": "4.17.4",
+    "lodash-old": "3.10.1"
+  },
+  "devDependencies": {
+    // VULNERABLE (Checkmarx SCA): Dev packages with vulnerabilities
+    "webpack": "3.10.0",              // Old version
+    "gulp": "3.9.0",                  // Old version
+    "grunt": "1.0.0",                 // Old version
+    "eslint": "4.19.0",               // Old version
+
+    // VULNERABLE (Checkmarx SCA): Dev packages that download executables
+    "phantomjs-prebuilt": "2.1.0",    // Downloads PhantomJS binary
+    "selenium-webdriver": "3.6.0"     // Downloads browser drivers
+  },
+  "optionalDependencies": {
+    // VULNERABLE (Checkmarx SCA): Optional packages with risks
+    "fsevents": "1.2.13",             // Old version
+    "optional-malicious": "1.0.0"     // Hypothetical malicious optional package
+  },
+  "peerDependencies": {
+    // VULNERABLE (Checkmarx SCA): Peer dependency conflicts
+    "react": "16.14.0",
+    "react-dom": "15.0.0"             // Version mismatch
+  },
+  "engines": {
+    "node": ">= 6.0.0",               // VULNERABLE (Checkmarx SCA): Old Node.js version
+    "npm": ">= 3.0.0"                 // Old npm version
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/checkmarx-sca-vulnerable-app.git"
+  }
+}

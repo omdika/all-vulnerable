@@ -1,0 +1,85 @@
+{
+  "name": "gitlab-dependency-vulnerable-app",
+  "version": "1.0.0",
+  "description": "Package.json with vulnerabilities detectable by GitLab Dependency Scanning",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    // VULNERABLE (GitLab Dependency Scanning): Packages with CVEs
+    "lodash": "4.17.10",              // CVE-2018-16487
+    "minimist": "0.0.8",              // CVE-2020-7598
+    "hoek": "4.2.0",                  // CVE-2018-3728
+    "debug": "2.6.0",                 // CVE-2017-16137
+    "express": "4.16.0",              // Multiple CVEs
+
+    // VULNERABLE (GitLab Dependency Scanning): Packages with license issues
+    "gpl-package": "1.0.0",           // GPL-3.0
+    "agpl-package": "2.0.0",          // AGPL-3.0
+    "proprietary-package": "1.0.0",   // Proprietary
+
+    // VULNERABLE (GitLab Dependency Scanning): Packages from untrusted sources
+    "git-package": "git+https://github.com/untrusted/repo.git",
+    "local-package": "file:../local-package",
+    "http-package": "http://example.com/package.tgz",
+
+    // VULNERABLE (GitLab Dependency Scanning): Typosquatting packages
+    "crossenv": "1.0.0",              // Malicious typosquat
+    "requrest": "2.88.0",             // Typo of request
+    "momen": "2.29.0",                // Typo of moment
+
+    // VULNERABLE (GitLab Dependency Scanning): Deprecated packages
+    "request": "2.88.0",              // Deprecated
+    "node-sass": "4.14.0",            // Deprecated
+    "phantomjs": "2.1.0",             // Deprecated
+
+    // VULNERABLE (GitLab Dependency Scanning): Packages with high severity
+    "jsonwebtoken": "8.5.0",          // CVE-2022-23529
+    "validator": "10.11.0",           // CVE-2021-3765
+    "uglify-js": "2.8.0",             // CVE-2015-8858
+
+    // VULNERABLE (GitLab Dependency Scanning): Packages with fix available
+    "react": "16.13.0",               // Fixed in 16.14.0
+    "react-dom": "16.13.0",           // Fixed in 16.14.0
+    "next": "9.0.0",                  // Fixed in later versions
+    "vue": "2.5.0",                   // Fixed in later versions
+    "angular": "5.0.0",               // Fixed in later versions
+
+    // VULNERABLE (GitLab Dependency Scanning): Transitive vulnerabilities
+    "babel-preset-env": "1.6.0",      // Depends on old core-js
+    "webpack-dev-server": "2.11.0",   // Depends on old sockjs
+    "eslint-plugin-react": "7.0.0"    // Depends on old eslint
+  },
+  "devDependencies": {
+    // VULNERABLE (GitLab Dependency Scanning): Dev packages with CVEs
+    "webpack": "4.46.0",              // Old version
+    "jest": "24.9.0",                 // Old version
+    "mocha": "6.2.3",                 // Old version
+    "gulp": "3.9.0",                  // Old version
+
+    // VULNERABLE (GitLab Dependency Scanning): Build tools with risks
+    "node-gyp": "3.8.0",              // Executes scripts
+    "phantomjs-prebuilt": "2.1.0"     // Downloads binary
+  },
+  "optionalDependencies": {
+    // VULNERABLE (GitLab Dependency Scanning): Optional packages with CVEs
+    "fsevents": "1.2.13",             // Old version
+    "sqlite3": "4.0.0"                // Old version
+  },
+  "peerDependencies": {
+    // VULNERABLE (GitLab Dependency Scanning): Peer dependency conflicts
+    "react": "16.14.0",
+    "react-dom": "15.0.0"             // Version mismatch
+  },
+  "engines": {
+    "node": ">= 8.0.0",               // Old Node.js version
+    "npm": ">= 5.0.0"                 // Old npm version
+  },
+  "license": "UNLICENSED",            // No license specified
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/example/gitlab-dependency-vulnerable-app.git"
+  }
+}

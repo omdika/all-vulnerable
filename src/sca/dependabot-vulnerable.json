@@ -1,0 +1,94 @@
+{
+  "name": "dependabot-vulnerable-app",
+  "version": "1.0.0",
+  "description": "Package.json with vulnerabilities detectable by GitHub Dependabot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    // VULNERABLE (Dependabot): Packages with CVEs in GitHub Advisory Database
+    // High severity CVEs
+    "lodash": "4.17.10",              // GHSA-35jh-r3h4-6jhr, CVE-2018-16487
+    "minimist": "0.0.8",              // GHSA-7fxs-m5w8-5g2g, CVE-2020-7598
+    "hoek": "4.2.0",                  // GHSA-jp4x-w63m-7wgm, CVE-2018-3728
+    "debug": "2.6.0",                 // GHSA-gj6j-7jwp-fw8c, CVE-2017-16137
+    "express": "4.16.0",              // Multiple advisories in older versions
+
+    // Medium severity CVEs
+    "mongoose": "5.7.0",              // GHSA-xjgx-9c8r-8fqx, CVE-2019-10788
+    "handlebars": "4.0.0",            // GHSA-f2jv-r9rf-7988, CVE-2019-19919
+    "axios": "0.18.0",                // GHSA-cph5-m8f7-6c5x, CVE-2019-10742
+    "serialize-javascript": "1.5.0",  // GHSA-hxcc-8jhp-p2g8, CVE-2019-16769
+
+    // Critical severity CVEs (examples)
+    "jsonwebtoken": "8.5.0",          // GHSA-8cf7-32gw-wr33, CVE-2022-23529
+    "validator": "10.11.0",           // GHSA-4g5c-6rmc-qr2m, CVE-2021-3765
+    "uglify-js": "2.8.0",             // GHSA-3f9h-7f6r-7rh6, CVE-2015-8858
+
+    // VULNERABLE (Dependabot): Packages with GitHub Security Advisories
+    "npm": "6.0.0",                   // GHSA-gwf4-7jpp-xxxx (example)
+    "yarn": "1.0.0",                  // GHSA-xxxx-xxxx-xxxx (example)
+
+    // VULNERABLE (Dependabot): Packages with dependency confusion
+    "private-package": "1.0.0",       // Could be replaced by malicious public package
+    "internal-package": "1.0.0",      // Same name as internal package
+
+    // VULNERABLE (Dependabot): Packages that depend on vulnerable packages
+    "babel-preset-env": "1.6.0",      // Depends on old core-js
+    "webpack-dev-server": "2.11.0",   // Depends on old sockjs
+
+    // VULNERABLE (Dependabot): Packages with automated fix available
+    "react": "16.13.0",               // Fixed in 16.14.0+
+    "react-dom": "16.13.0",           // Fixed in 16.14.0+
+    "next": "9.0.0",                  // Old version with fixes available
+    "vue": "2.5.0",                   // Old version with fixes available
+    "angular": "5.0.0",               // Old version with fixes available
+
+    // VULNERABLE (Dependabot): Packages with transitive vulnerabilities
+    "eslint-plugin-react": "7.0.0",   // Depends on old eslint
+    "stylelint": "9.0.0",             // Depends on old postcss
+
+    // VULNERABLE (Dependabot): Packages with deprecated dependencies
+    "gulp-sass": "3.0.0",             // Depends on node-sass (deprecated)
+    "node-sass": "4.14.0",            // Deprecated package
+
+    // VULNERABLE (Dependabot): Packages with outdated major versions
+    "express": "4.16.0",              // Latest is 4.x.x but should be updated
+    "mongoose": "5.7.0",              // Latest is 5.x.x but should be updated
+    "lodash": "4.17.10",              // Latest is 4.x.x but should be updated
+    "moment": "2.18.0"                // Latest is 2.x.x but should be updated
+  },
+  "devDependencies": {
+    // VULNERABLE (Dependabot): Dev packages with CVEs
+    "webpack": "4.46.0",              // GHSA-xxxx-xxxx-xxxx (example)
+    "jest": "24.9.0",                 // Old version
+    "mocha": "6.2.3",                 // Old version
+    "nyc": "13.0.0",                  // Old version
+
+    // VULNERABLE (Dependabot): Test packages with vulnerabilities
+    "chai": "4.0.0",                  // Old version
+    "sinon": "7.0.0",                 // Old version
+    "enzyme": "3.0.0"                 // Old version
+  },
+  "optionalDependencies": {
+    // VULNERABLE (Dependabot): Optional packages with CVEs
+    "fsevents": "1.2.13",             // Old version
+    "sqlite3": "4.0.0"                // Old version
+  },
+  "peerDependencies": {
+    // VULNERABLE (Dependabot): Peer dependencies with CVEs
+    "webpack": "4.46.0",
+    "react": "16.13.0"
+  },
+  "engines": {
+    "node": ">= 10.0.0",              // Dependabot may suggest updating Node.js version
+    "npm": ">= 6.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/dependabot-vulnerable-app.git"
+  }
+}

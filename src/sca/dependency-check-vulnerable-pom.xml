@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.dependencycheck.vulnerable</groupId>
+    <artifactId>dependency-check-vulnerable-java</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Dependency-Check Vulnerable Java</name>
+    <description>Java project with vulnerabilities detectable by OWASP Dependency-Check</description>
+
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source> <!-- VULNERABLE: Old Java version -->
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- VULNERABLE (Dependency-Check): Dependencies with critical CVEs -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version> <!-- CVE-2019-17571, CVE-2021-44228 (Log4Shell) -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.1</version> <!-- CVE-2021-44228 (Log4Shell) -->
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version> <!-- CVE-2015-6420 -->
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.9</version> <!-- CVE-2019-12384, CVE-2019-12814 -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+            <version>2.3.37</version> <!-- CVE-2017-5638 (Apache Struts vulnerability) -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>4.3.20.RELEASE</version> <!-- Old version with multiple CVEs -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>8.5.0</version> <!-- Old version with CVEs -->
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version> <!-- Old version with CVEs -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.25</version> <!-- CVE-2022-1471 -->
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): Dependencies with high severity CVEs -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.6</version> <!-- CVE-2022-42889 (Text4Shell) -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version> <!-- Old version with CVEs -->
+        </dependency>
+
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.11.0</version> <!-- Old version with CVEs -->
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): Dependencies with medium severity CVEs -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.2</version> <!-- CVE-2016-3092 -->
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version> <!-- Old version -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version> <!-- Old version with CVEs -->
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): Test dependencies with CVEs -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version> <!-- Old version -->
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.10.19</version> <!-- Old version -->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): Runtime scope dependencies with CVEs -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.48</version> <!-- Old version -->
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): Provided scope dependencies with CVEs -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version> <!-- Very old -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): Optional dependencies with CVEs -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>8.5.0</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): System scope dependencies (bypasses central repo) -->
+        <dependency>
+            <groupId>com.custom</groupId>
+            <artifactId>custom-lib</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/custom.jar</systemPath>
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): Duplicate dependencies with different versions -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.0-jre</version> <!-- Causes version conflict -->
+        </dependency>
+
+        <!-- VULNERABLE (Dependency-Check): Import scope BOM with vulnerable dependencies -->
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>vulnerable-bom</artifactId>
+            <version>1.0.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+            </plugin>
+
+            <!-- VULNERABLE (Dependency-Check): Old plugin versions with CVEs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version> <!-- Old version -->
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version> <!-- Old version -->
+            </plugin>
+
+            <!-- VULNERABLE (Dependency-Check): Plugin with known vulnerabilities -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version> <!-- Very old -->
+            </plugin>
+
+            <!-- OWASP Dependency-Check plugin (for demonstration) -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>6.5.3</version>
+                <configuration>
+                    <!-- VULNERABLE: Disabling critical checks -->
+                    <failBuildOnCVSS>11</failBuildOnCVSS> <!-- Setting impossibly high threshold -->
+                    <suppressionFile>${project.basedir}/suppression.xml</suppressionFile>
+                    <skip>false</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- VULNERABLE (Dependency-Check): Profile with additional vulnerable dependencies -->
+        <profile>
+            <id>production</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shiro</groupId>
+                    <artifactId>shiro-core</artifactId>
+                    <version>1.5.0</version> <!-- CVE-2020-13946 -->
+                </dependency>
+                <dependency>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                    <version>5.4.0.Final</version> <!-- Old version -->
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
+    <!-- VULNERABLE (Dependency-Check): No license information -->
+    <licenses>
+    </licenses>
+
+    <!-- VULNERABLE (Dependency-Check): No developer information -->
+    <developers>
+    </developers>
+
+    <!-- VULNERABLE (Dependency-Check): Using insecure repository -->
+    <repositories>
+        <repository>
+            <id>insecure-repo</id>
+            <url>http://insecure-repo.example.com/maven2</url> <!-- HTTP, not HTTPS -->
+        </repository>
+    </repositories>
+</project>
