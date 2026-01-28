@@ -1,0 +1,61 @@
+{
+  "name": "vulnerable-app",
+  "version": "1.0.0",
+  "description": "Vulnerable Node.js application for SAST testing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    // VULNERABLE: Dependencies with known vulnerabilities
+    "express": "4.16.0",  // Older version with known vulnerabilities
+    "lodash": "4.17.4",   // Older version
+    "moment": "2.18.0",   // Older version
+    "debug": "2.6.0",     // Older version
+    "request": "2.81.0",  // Deprecated and has vulnerabilities
+
+    // VULNERABLE: Packages with malicious code patterns
+    "flatmap-stream": "0.1.0",  // Known malicious package (example)
+
+    // VULNERABLE: Direct GitHub references without commit hashes
+    "some-package": "git+https://github.com/user/repo.git",
+
+    // VULNERABLE: Local file dependencies
+    "local-package": "file:../local-package",
+
+    // VULNERABLE: Using '*' or 'latest' versions
+    "wildcard-package": "*",
+    "latest-package": "latest",
+
+    // VULNERABLE: Packages with typosquatting names
+    "cross-env": "1.0.0",  // Legitimate, but similar to malicious 'crossenv'
+
+    // VULNERABLE: Large dependency tree
+    "babel-core": "6.26.0",
+    "webpack": "3.10.0"
+  },
+  "devDependencies": {
+    // VULNERABLE: Development dependencies with vulnerabilities
+    "gulp": "3.9.0",  // Older version
+    "grunt": "1.0.0",  // Older version
+
+    // VULNERABLE: Packages with vulnerable transitive dependencies
+    "eslint": "4.19.0",
+    "mocha": "5.0.0"
+  },
+  "engines": {
+    "node": ">= 6.0.0"  // VULNERABLE: Old Node.js version
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/vulnerable-app.git"
+  },
+  "keywords": [
+    "vulnerable",
+    "sast",
+    "testing"
+  ],
+  "author": "Test User",
+  "license": "MIT"
+}

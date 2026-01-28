@@ -1,0 +1,55 @@
+# Vulnerable Dockerfile for testing SAST tools like Checkov
+
+# VULNERABLE: Using latest tag
+FROM ubuntu:latest
+
+# VULNERABLE: Running as root
+USER root
+
+# VULNERABLE: Hardcoded credentials
+ENV DB_PASSWORD="password123"
+ENV API_KEY="sk_live_1234567890abcdef"
+
+# VULNERABLE: Copying all files without .dockerignore
+COPY . /app
+
+# VULNERABLE: Running apt-get update and install in same line
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    # VULNERABLE: Installing unnecessary packages
+    telnet \
+    # VULNERABLE: Not cleaning up apt lists
+    && rm -rf /var/lib/apt/lists/*
+
+# VULNERABLE: Exposing all ports
+EXPOSE 1-65535
+
+# VULNERABLE: Running service as root
+CMD ["python", "/app/app.py"]
+
+# VULNERABLE: No HEALTHCHECK instruction
+# VULNERABLE: Using ADD instead of COPY for local files
+ADD https://example.com/script.sh /tmp/script.sh
+
+# VULNERABLE: Setting sensitive environment variables
+ENV AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE" \
+    AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+
+# VULNERABLE: Using chmod 777
+RUN chmod 777 /app
+
+# VULNERABLE: Adding sudo to image
+RUN apt-get install -y sudo
+
+# Safe Dockerfile for comparison
+# FROM ubuntu:20.04
+# USER nonrootuser
+# COPY --chown=nonrootuser:nonrootuser . /app
+# RUN apt-get update && apt-get install -y \
+#     curl \
+#     && rm -rf /var/lib/apt/lists/*
+# EXPOSE 8080
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+#     CMD curl -f http://localhost:8080/health || exit 1
+# CMD ["python", "/app/app.py"]

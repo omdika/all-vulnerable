@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.vulnerable</groupId>
+    <artifactId>all-vulnerable-java</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>All Vulnerable Java</name>
+    <description>Java code with vulnerabilities for SAST testing</description>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- VULNERABLE: Outdated dependencies with known vulnerabilities -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version> <!-- Old version with vulnerabilities -->
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version> <!-- Log4j 1.x has vulnerabilities -->
+        </dependency>
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.2</version> <!-- Old version -->
+        </dependency>
+
+        <!-- VULNERABLE: Direct repository URLs -->
+        <!--
+        <repositories>
+            <repository>
+                <id>untrusted-repo</id>
+                <url>http://untrusted-repo.example.com/maven2</url>
+            </repository>
+        </repositories>
+        -->
+
+        <!-- Safe dependencies for comparison -->
+        <!--
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.17.0</version>
+        </dependency>
+        -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+            </plugin>
+
+            <!-- VULNERABLE: Old plugin versions -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version> <!-- Old version -->
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- VULNERABLE: Distribution management with hardcoded credentials -->
+    <!--
+    <distributionManagement>
+        <repository>
+            <id>internal-repo</id>
+            <url>https://repo.example.com/repository/maven-releases</url>
+            <username>deployUser</username>
+            <password>deployPassword123</password>
+        </repository>
+    </distributionManagement>
+    -->
+</project>

@@ -1,0 +1,192 @@
+# Vulnerable Kubernetes manifests for testing SAST tools like Checkov
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vulnerable-pod
+spec:
+  containers:
+  - name: vulnerable-container
+    image: ubuntu:latest  # VULNERABLE: Using latest tag
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo vulnerable; sleep 5; done"]
+    # VULNERABLE: Running as root
+    securityContext:
+      runAsUser: 0
+      privileged: true  # VULNERABLE: Privileged container
+    # VULNERABLE: No resource limits
+    # VULNERABLE: No readiness/liveness probes
+    env:
+    - name: DB_PASSWORD
+      value: "password123"  # VULNERABLE: Hardcoded secret in plain text
+    - name: API_KEY
+      value: "sk_live_1234567890abcdef"
+    # VULNERABLE: Mounting host filesystem
+    volumeMounts:
+    - name: host-root
+      mountPath: /host
+      readOnly: false
+  volumes:
+  - name: host-root
+    hostPath:
+      path: /
+      type: Directory
+  # VULNERABLE: No service account specified (uses default)
+  # VULNERABLE: No security context at pod level
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vulnerable-service
+spec:
+  selector:
+    app: vulnerable-pod
+  ports:
+  - port: 80
+    targetPort: 8080
+  # VULNERABLE: Using LoadBalancer type with default settings
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vulnerable-secret
+type: Opaque
+data:
+  # VULNERABLE: Base64 encoded but still in version control
+  password: cGFzc3dvcmQxMjM=  # "password123" in base64
+  apikey: c2tfbGl2ZV8xMjM0NTY3ODkwYWJjZGVm  # "sk_live_1234567890abcdef"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulnerable-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vulnerable-app
+  template:
+    metadata:
+      labels:
+        app: vulnerable-app
+    spec:
+      containers:
+      - name: app
+        image: myapp:latest
+        # VULNERABLE: No imagePullPolicy specified
+        # VULNERABLE: No security context
+        ports:
+        - containerPort: 8080
+        # VULNERABLE: No resource requests/limits
+        # VULNERABLE: No liveness/readiness probes
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all
+spec:
+  podSelector: {}
+  ingress:
+  - {}  # VULNERABLE: Allows all ingress traffic
+  egress:
+  - {}  # VULNERABLE: Allows all egress traffic
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vulnerable-config
+data:
+  # VULNERABLE: Configuration with sensitive data
+  database.url: "jdbc:mysql://localhost:3306/test?user=admin&password=password123"
+  api.endpoint: "https://api.example.com/key=sk_live_1234567890abcdef"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: vulnerable-role
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]  # VULNERABLE: Wildcard permissions
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vulnerable-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: vulnerable-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default  # VULNERABLE: Binding default service account to admin role
+---
+# Safe Kubernetes manifests for comparison
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-pod
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 2000
+  containers:
+  - name: secure-container
+    image: ubuntu:20.04
+    imagePullPolicy: Always
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    env:
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: database-secret
+          key: password
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secure-secret
+type: Opaque
+stringData:
+  password: "password123"  # Will be encrypted by Kubernetes
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress

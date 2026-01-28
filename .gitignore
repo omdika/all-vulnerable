@@ -1,0 +1,86 @@
+# Build outputs
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Dependency directories
+node_modules/
+vendor/
+target/
+build/
+dist/
+out/
+bin/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coverage directories
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env/
+venv/
+ENV/
+.env.vulnerable  # Don't ignore the vulnerable example
+
+# Java
+.mtj.tmp/
+
+# C/C++
+*.o
+*.ko
+*.obj
+*.elf
+*.ilk
+*.map
+*.exp
+
+# Go
+go.sum
+
+# Ruby
+*.gem
+.bundle/
+
+# PHP
+composer.lock
+
+# Don't ignore the vulnerable infrastructure files
+!src/infrastructure/
+
+# Keep the vulnerable example env file
+!src/.env.vulnerable

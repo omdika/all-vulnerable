@@ -1,0 +1,56 @@
+# Vulnerable Python dependencies for SAST testing
+
+# VULNERABLE: Packages with known vulnerabilities
+Django==1.11.0  # Older version with known vulnerabilities
+Flask==0.12.0   # Older version
+requests==2.18.0  # Older version
+urllib3==1.21.1  # Older version
+
+# VULNERABLE: Packages without version pins
+pyyaml  # No version specified
+
+# VULNERABLE: Direct Git references without commit hashes
+git+https://github.com/user/repo.git
+
+# VULNERABLE: Local file dependencies
+./local-package
+
+# VULNERABLE: Packages from untrusted indexes
+--index-url http://untrusted-index.example.com/simple/
+untrusted-package
+
+# VULNERABLE: Packages with typosquatting names
+# (e.g., 'python-dateutil' vs 'python-dateutill')
+
+# VULNERABLE: Large dependency trees
+numpy==1.13.0
+pandas==0.20.0
+scikit-learn==0.19.0
+
+# VULNERABLE: Packages with malicious code
+# (hypothetical examples only)
+
+# VULNERABLE: Development dependencies mixed with production
+pytest==3.0.0
+coverage==4.0.0
+
+# Safe requirements.txt example for comparison
+"""
+# requirements.safe.txt
+Django==3.2.0
+Flask==2.0.0
+requests==2.26.0
+urllib3==1.26.0
+
+# Pinned versions for all dependencies
+pyyaml==6.0
+
+# Trusted sources only
+--index-url https://pypi.org/simple/
+--trusted-host pypi.org
+
+# Separate dev requirements
+# requirements-dev.txt
+pytest==6.2.0
+coverage==5.5.0
+"""
