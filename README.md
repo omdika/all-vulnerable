@@ -1,13 +1,13 @@
 # All-Vulnerable Framework
 
-A comprehensive framework containing deliberately vulnerable code examples for testing and evaluating Static Application Security Testing (SAST) tools.
+A comprehensive framework containing deliberately vulnerable code examples for testing and evaluating security tools including Static Application Security Testing (SAST), Software Composition Analysis (SCA), and Software Bill of Materials (SBOM) tools.
 
 ## Purpose
 
 This framework is designed for educational and testing purposes only. It contains intentionally vulnerable code snippets to help:
-- Security researchers test SAST tool capabilities
+- Security researchers test SAST, SCA, and SBOM tool capabilities
 - Developers learn about common security vulnerabilities
-- Organizations evaluate SAST tool effectiveness
+- Organizations evaluate security tool effectiveness
 - Security training and awareness programs
 
 ## Supported Security Tools
@@ -33,6 +33,15 @@ This framework includes vulnerabilities detectable by:
 - cdxgen-cbom - CycloneDX SBOM generation
 - cdxgen-mlbom - Multi-language BOM generation
 
+### SCA (Software Composition Analysis) Tools:
+- Black Duck - Open source security and license compliance
+- Checkmarx SCA - Dependency vulnerability scanning
+- GitHub Dependabot - Automated dependency updates and security alerts
+- GitLab Dependency Scanning - Integrated dependency scanning in CI/CD
+- DustiLock - Supply chain security and dependency confusion detection
+- OWASP Dependency-Check - Dependency vulnerability analysis
+- Trivy-SCA - Vulnerability scanning for dependencies
+
 ## Security Warning
 
 ⚠️ **WARNING**: This framework contains deliberately vulnerable code.
@@ -54,7 +63,8 @@ src/
 ├── ruby/           - Ruby vulnerabilities
 ├── csharp/         - C#/.NET vulnerabilities
 ├── infrastructure/ - Infrastructure as Code vulnerabilities
-└── sbom/           - SBOM and dependency vulnerabilities
+├── sbom/           - SBOM and dependency vulnerabilities
+└── sca/            - SCA (Software Composition Analysis) vulnerabilities
 tests/              - Test cases for vulnerabilities
 docs/               - Documentation
 ```
@@ -82,6 +92,15 @@ docs/               - Documentation
 - Incomplete or inaccurate SBOMs
 - SBOM configuration and storage issues
 
+### SCA (Software Composition Analysis) Vulnerabilities:
+- License compliance and legal risks (Black Duck)
+- Risky dependency patterns (Checkmarx SCA)
+- Automated security updates (GitHub Dependabot)
+- CI/CD integrated scanning (GitLab Dependency Scanning)
+- Supply chain security and dependency confusion (DustiLock)
+- CVE detection across multiple languages (OWASP Dependency-Check)
+- Comprehensive vulnerability scanning (Trivy-SCA)
+
 ## Usage
 
 ### For SAST Tools:
@@ -96,6 +115,12 @@ docs/               - Documentation
 3. Scan SBOMs for vulnerabilities and compliance issues
 4. Validate SBOM quality and completeness
 
+### For SCA Tools:
+1. Navigate to `src/sca/` directory
+2. Test each SCA tool against its specific vulnerable file
+3. Review detection of license issues, CVEs, and supply chain risks
+4. Compare tool capabilities and coverage
+
 ### Example Commands:
 ```bash
 # Generate SBOM with Syft
@@ -106,6 +131,12 @@ trivy sbom sbom.json
 
 # Generate CycloneDX BOM with cdxgen
 cdxgen -o bom.cdx.json src/sbom/
+
+# Scan dependencies with OWASP Dependency-Check
+dependency-check --project test --scan src/sca/dependency-check-vulnerable.json
+
+# Scan with Trivy SCA
+trivy fs --scanners vuln,license,secret src/sca/
 ```
 
 ## Contributing
