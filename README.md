@@ -1,11 +1,11 @@
 # All-Vulnerable Framework
 
-A comprehensive framework containing deliberately vulnerable code examples for testing and evaluating security tools including Static Application Security Testing (SAST), Software Composition Analysis (SCA), Software Bill of Materials (SBOM), and Infrastructure as Code (IaC) security tools.
+A comprehensive framework containing deliberately vulnerable code examples for testing and evaluating security tools including Static Application Security Testing (SAST), Software Composition Analysis (SCA), Software Bill of Materials (SBOM), Infrastructure as Code (IaC), and Container Security tools.
 
 ## Purpose
 
 This framework is designed for educational and testing purposes only. It contains intentionally vulnerable code snippets to help:
-- Security researchers test SAST, SCA, SBOM, and IaC tool capabilities
+- Security researchers test SAST, SCA, SBOM, IaC, and Container Security tool capabilities
 - Developers learn about common security vulnerabilities
 - Organizations evaluate security tool effectiveness
 - Security training and awareness programs
@@ -51,6 +51,12 @@ This framework includes vulnerabilities detectable by:
 - GitLab SAST IaC - Integrated IaC scanning in CI/CD
 - Snyk IaC - Infrastructure as Code security scanning
 
+### Container Security Tools:
+- Checkov Container - Infrastructure as Code scanning for containers
+- Grype - Vulnerability scanner for container images and filesystems
+- Trivy-Container - Comprehensive vulnerability scanning for containers
+- KICS Container - Infrastructure as Code security scanning with container focus
+
 ## Security Warning
 
 ⚠️ **WARNING**: This framework contains deliberately vulnerable code.
@@ -72,6 +78,7 @@ src/
 ├── ruby/           - Ruby vulnerabilities
 ├── csharp/         - C#/.NET vulnerabilities
 ├── infrastructure/ - Infrastructure as Code vulnerabilities
+├── container/       - Container security vulnerabilities
 ├── sbom/           - SBOM and dependency vulnerabilities
 └── sca/            - SCA (Software Composition Analysis) vulnerabilities
 tests/              - Test cases for vulnerabilities
@@ -117,7 +124,15 @@ docs/               - Documentation
 - Missing encryption for data at rest and in transit
 - Use of deprecated or insecure API versions
 - Resource misconfiguration and security best practices violations
-- Container security issues (root user, latest tags, exposed ports)
+
+### Container Security Vulnerabilities:
+- Image vulnerabilities (packages with CVEs, outdated software)
+- Configuration misconfigurations (privileged mode, root user, exposed ports)
+- Build-time issues (latest tags, unnecessary packages, hardcoded secrets)
+- Runtime security gaps (missing health checks, no resource limits)
+- Orchestration vulnerabilities (docker-compose, Kubernetes misconfigurations)
+- Secret management failures (hardcoded credentials, improper secret handling)
+- Network security issues (host networking, exposed services)
 
 ## Usage
 
@@ -144,6 +159,12 @@ docs/               - Documentation
 2. Test IaC security tools against Terraform, Kubernetes, Docker, and CloudFormation files
 3. Review detection of misconfigurations, hardcoded secrets, and security violations
 4. Compare tool coverage across different IaC languages
+
+### For Container Security Tools:
+1. Navigate to `src/container/` directory
+2. Test container security tools against Dockerfile and docker-compose files
+3. Review detection of image vulnerabilities, configuration issues, and runtime risks
+4. Compare tool capabilities for container image scanning vs configuration scanning
 
 ### Example Commands:
 ```bash
@@ -173,6 +194,19 @@ hadolint src/infrastructure/Dockerfile.vulnerable
 
 # Scan multi-IaC with KICS
 kics scan -p src/infrastructure/
+
+# Container Security Scanning
+# Scan container image with Grype
+grype myimage:latest
+
+# Scan container with Trivy
+trivy image myimage:latest
+
+# Scan Dockerfile with Checkov Container
+checkov --file src/container/Dockerfile-container-vulnerable
+
+# Scan container configurations with KICS Container
+kics scan -p src/container/
 ```
 
 ## Contributing

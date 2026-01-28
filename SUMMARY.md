@@ -39,6 +39,12 @@ checkov -d src/infrastructure/
 - **Terraform**: Public resources, hardcoded credentials, wildcard permissions
 - **Kubernetes**: Privileged containers, root user, exposed secrets
 
+### 🐳 Container Security
+- **Checkov Container**: Dockerfile and container configuration scanning
+- **Grype**: Container image vulnerability scanning
+- **Trivy-Container**: Comprehensive container security analysis
+- **KICS Container**: Infrastructure as Code scanning for containers
+
 ### 📦 Dependency Management
 - **package.json**: Outdated packages, unpinned versions
 - **requirements.txt**: Vulnerable dependencies, unpinned versions
@@ -80,6 +86,15 @@ checkov -d src/infrastructure/
 | DustiLock | Node.js, Python, etc. | No | Yes |
 | OWASP Dependency-Check | Java, .NET, Node.js, Python, etc. | No | Yes |
 | Trivy-SCA | Multiple languages | No | Yes |
+
+## Supported Container Security Tools
+
+| Tool | Primary Languages | Infrastructure | Dependencies |
+|------|-------------------|----------------|--------------|
+| Checkov Container | Dockerfile, Kubernetes, etc. | Yes | No |
+| Grype | Container images, filesystems | No | Yes |
+| Trivy-Container | Container images, configurations | Yes | Yes |
+| KICS Container | Dockerfile, docker-compose, etc. | Yes | No |
 
 ## Vulnerability Catalog
 

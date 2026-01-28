@@ -1,0 +1,265 @@
+# Vulnerable docker-compose.yml for Container Security Tools
+# This file contains vulnerabilities detectable by:
+# - Checkov Container
+# - Grype (if used with docker-compose)
+# - Trivy-Container
+# - KICS Container
+
+version: '3.8'
+
+services:
+  # VULNERABLE (Container Security): Web service with multiple vulnerabilities
+  web:
+    # VULNERABLE: Using latest tag
+    image: nginx:latest
+
+    # VULNERABLE: Running as root
+    user: root
+
+    # VULNERABLE: Privileged mode enabled
+    privileged: true
+
+    # VULNERABLE: Adding dangerous capabilities
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+      - SYS_PTRACE
+      - DAC_OVERRIDE
+
+    # VULNERABLE: Mounting sensitive host directories
+    volumes:
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host:ro
+      - ./secrets:/app/secrets:rw
+
+    # VULNERABLE: Exposing all ports
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+      - "0.0.0.0:22:22"
+
+    # VULNERABLE: Setting environment variables with hardcoded secrets
+    environment:
+      - DB_PASSWORD=SuperSecret123!
+      - API_KEY=sk_live_1234567890abcdef
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      - NODE_ENV=production
+      - DEBUG=true
+
+    # VULNERABLE: No resource limits (potential DoS)
+    # resources: {}  # Missing resource limits
+
+    # VULNERABLE: No restart policy
+    restart: "no"
+
+    # VULNERABLE: No healthcheck
+    # healthcheck: {}  # Missing healthcheck
+
+    # VULNERABLE: Using host network mode
+    network_mode: "host"
+
+    # VULNERABLE: Setting container as init system
+    init: true
+
+    # VULNERABLE: Disabling security options
+    security_opt:
+      - "seccomp=unconfined"
+      - "apparmor=unconfined"
+      - "no-new-privileges=false"
+
+    # VULNERABLE: Setting shared memory size too large
+    shm_size: '2gb'
+
+    # VULNERABLE: Setting ulimits dangerously
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  # VULNERABLE (Container Security): Database service with vulnerabilities
+  db:
+    # VULNERABLE: Using old image with CVEs
+    image: mysql:5.5
+
+    # VULNERABLE: Hardcoded root password
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword123
+      - MYSQL_DATABASE=appdb
+      - MYSQL_USER=appuser
+      - MYSQL_PASSWORD=apppassword123
+
+    # VULNERABLE: Exposing database to all interfaces
+    ports:
+      - "0.0.0.0:3306:3306"
+
+    # VULNERABLE: Mounting volume without backup consideration
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backup:/backup:rw
+
+    # VULNERABLE: No database backup configuration
+    # command: []  # Missing backup commands or configuration
+
+  # VULNERABLE (Container Security): Redis service with issues
+  redis:
+    # VULNERABLE: Old Redis version
+    image: redis:3.2
+
+    # VULNERABLE: No password protection
+    command: redis-server --protected-mode no
+
+    # VULNERABLE: Exposing Redis to all networks
+    ports:
+      - "0.0.0.0:6379:6379"
+
+    # VULNERABLE: Running as root
+    user: root
+
+  # VULNERABLE (Container Security): Application service built from vulnerable Dockerfile
+  app:
+    # VULNERABLE: Building from vulnerable Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile-container-vulnerable
+
+    # VULNERABLE: Depends on all services (tight coupling)
+    depends_on:
+      - db
+      - redis
+      - web
+
+    # VULNERABLE: Using host IPC
+    ipc: host
+
+    # VULNERABLE: Using host PID namespace
+    pid: host
+
+    # VULNERABLE: Setting read-only root filesystem to false
+    read_only: false
+
+    # VULNERABLE: Mounting tmpfs with executable permissions
+    tmpfs:
+      - /tmp:exec,size=1g
+
+    # VULNERABLE: No logging configuration
+    # logging: {}  # Missing logging configuration
+
+    # VULNERABLE: Setting stop signal to default
+    stop_signal: SIGTERM
+
+    # VULNERABLE: No stop grace period
+    # stop_grace_period:  # Missing
+
+    # VULNERABLE: Setting tty and stdin_open for interactive access
+    tty: true
+    stdin_open: true
+
+  # VULNERABLE (Container Security): Monitoring service with excessive permissions
+  monitoring:
+    image: prom/prometheus:latest
+
+    # VULNERABLE: Mounting host proc filesystem
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+
+    # VULNERABLE: Using host network for monitoring
+    network_mode: host
+
+    # VULNERABLE: Setting privileged for monitoring
+    privileged: true
+
+# VULNERABLE (Container Security): Network configuration
+networks:
+  default:
+    # VULNERABLE: Using default bridge network (no isolation)
+    driver: bridge
+    # VULNERABLE: No network encryption configuration
+    # driver_opts: {}  # Missing encryption options
+
+# VULNERABLE (Container Security): Volume configuration
+volumes:
+  db_data:
+    # VULNERABLE: No volume encryption or backup configuration
+    driver: local
+    # VULNERABLE: No driver options for security
+    # driver_opts: {}  # Missing security options
+
+# Safe docker-compose example for comparison (commented out)
+"""
+version: '3.8'
+
+services:
+  web:
+    image: nginx:1.21-alpine
+    user: "1000:1000"
+    ports:
+      - "127.0.0.1:80:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - "no-new-privileges=true"
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.50'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile-safe
+    depends_on:
+      db:
+        condition: service_healthy
+    secrets:
+      - db_password
+    environment:
+      NODE_ENV: production
+    read_only: true
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/postgres
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"
+"""

@@ -1,0 +1,161 @@
+# Vulnerable Dockerfile for Container Security Tools
+# This file contains vulnerabilities detectable by:
+# - Checkov Container
+# - Grype
+# - Trivy-Container
+# - KICS Container
+
+# VULNERABLE (Container Security): Using latest tag (no version pinning)
+FROM ubuntu:latest
+
+# VULNERABLE (Container Security): Running as root user
+USER root
+
+# VULNERABLE (Container Security): Packages with known CVEs for Grype/Trivy scanning
+RUN apt-get update && apt-get install -y \
+    # VULNERABLE: OpenSSL with known vulnerabilities
+    openssl=1.1.1-1ubuntu2.1~18.04.20 \
+    # VULNERABLE: Bash with Shellshock (CVE-2014-6271, CVE-2014-6277, etc.)
+    bash=4.4.18-2ubuntu1.3 \
+    # VULNERABLE: glibc with vulnerabilities
+    libc6=2.27-3ubuntu1.6 \
+    # VULNERABLE: curl with CVEs
+    curl=7.58.0-2ubuntu3.24 \
+    # VULNERABLE: wget with security issues
+    wget=1.19.4-1ubuntu2.2 \
+    # VULNERABLE: tar with path traversal
+    tar=1.29b-2ubuntu0.4 \
+    # VULNERABLE: unzip with vulnerabilities
+    unzip=6.0-21ubuntu1.2 \
+    # VULNERABLE: Python with old version
+    python3.6=3.6.9-1~18.04ubuntu1.11 \
+    python3-pip=9.0.1-2.3~ubuntu1.18.04.8 \
+    # VULNERABLE: Node.js old version
+    nodejs=8.10.0~dfsg-2ubuntu0.4 \
+    npm=3.5.2-0ubuntu4 \
+    # VULNERABLE: Apache with CVEs
+    apache2=2.4.29-1ubuntu4.27 \
+    # VULNERABLE: Nginx old version
+    nginx=1.14.0-0ubuntu1.11 \
+    && rm -rf /var/lib/apt/lists/*
+
+# VULNERABLE (Container Security): Installing packages from pip with CVEs
+RUN pip3 install \
+    # VULNERABLE: Django with known vulnerabilities
+    Django==1.11.0 \
+    # VULNERABLE: Flask with security issues
+    Flask==0.12.0 \
+    # VULNERABLE: requests with CVEs
+    requests==2.18.0 \
+    # VULNERABLE: urllib3 with vulnerabilities
+    urllib3==1.21.1 \
+    # VULNERABLE: pyyaml with security issues
+    pyyaml==3.13
+
+# VULNERABLE (Container Security): Installing npm packages with CVEs
+RUN npm install -g \
+    # VULNERABLE: lodash with prototype pollution
+    lodash@4.17.10 \
+    # VULNERABLE: minimist with prototype pollution
+    minimist@0.0.8 \
+    # VULNERABLE: hoek with security issues
+    hoek@4.2.0 \
+    # VULNERABLE: debug with regex DoS
+    debug@2.6.0
+
+# VULNERABLE (Container Security): Hardcoded secrets in environment variables
+ENV DB_PASSWORD="SuperSecret123!" \
+    API_KEY="sk_live_1234567890abcdef" \
+    AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE" \
+    AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
+    SSH_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\\nMIIEogIBAAKCA..."
+
+# VULNERABLE (Container Security): Exposing unnecessary ports
+EXPOSE 1-65535
+
+# VULNERABLE (Container Security): Copying all files without .dockerignore
+COPY . /app
+
+# VULNERABLE (Container Security): Setting world-writable permissions
+RUN chmod 777 /app
+
+# VULNERABLE (Container Security): Adding sudo capability
+RUN apt-get update && apt-get install -y sudo
+
+# VULNERABLE (Container Security): Running privileged container instructions
+# (These would be in docker run command, but noted here)
+# docker run --privileged --cap-add=SYS_ADMIN ...
+
+# VULNERABLE (Container Security): No HEALTHCHECK instruction
+# VULNERABLE (Container Security): No USER instruction to drop privileges
+
+# VULNERABLE (Container Security): Using ADD with remote URLs (potential MITM)
+ADD https://example.com/untrusted-script.sh /tmp/untrusted-script.sh
+RUN chmod +x /tmp/untrusted-script.sh
+
+# VULNERABLE (Container Security): Installing packages from untrusted sources
+RUN echo "deb http://untrusted-repo.example.com/ubuntu bionic main" >> /etc/apt/sources.list && \
+    apt-get update && apt-get install -y untrusted-package
+
+# VULNERABLE (Container Security): Setting sensitive files with weak permissions
+RUN echo "root:password123" | chpasswd && \
+    echo "SecretConfiguration: true" > /etc/app/config.yaml && \
+    chmod 644 /etc/app/config.yaml
+
+# VULNERABLE (Container Security): Disabling security features
+# (Example: disabling ASLR, not recommended)
+# RUN echo 0 > /proc/sys/kernel/randomize_va_space
+
+# VULNERABLE (Container Security): Installing debugging tools in production
+RUN apt-get install -y \
+    strace \
+    ltrace \
+    gdb \
+    netcat \
+    tcpdump
+
+# VULNERABLE (Container Security): Setting environment variables that leak information
+ENV NODE_ENV="production" \
+    APP_DEBUG="true" \
+    SHOW_ERRORS="true"
+
+# VULNERABLE (Container Security): Using shell form of CMD (potential injection)
+CMD python /app/app.py --debug=true --port=8080
+
+# Safe Dockerfile example for comparison (commented out)
+"""
+# Safe Dockerfile
+FROM ubuntu:20.04
+
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+USER appuser
+
+# Copy application files
+COPY --chown=appuser:appuser . /app
+
+# Install only necessary packages with pinned versions
+RUN apt-get update && apt-get install -y \
+    openssl=1.1.1f-1ubuntu2.17 \
+    curl=7.68.0-1ubuntu2.18 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages with security updates
+RUN pip3 install --no-cache-dir \
+    Django==3.2.0 \
+    Flask==2.0.0 \
+    requests==2.28.0
+
+# Set environment variables (secrets should come from runtime)
+ENV NODE_ENV="production"
+
+# Expose only necessary port
+EXPOSE 8080
+
+# Add HEALTHCHECK
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Use exec form of CMD
+CMD ["python", "/app/app.py"]
+"""
