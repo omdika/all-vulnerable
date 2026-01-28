@@ -1,11 +1,11 @@
 # All-Vulnerable Framework
 
-A comprehensive framework containing deliberately vulnerable code examples for testing and evaluating security tools including Static Application Security Testing (SAST), Software Composition Analysis (SCA), and Software Bill of Materials (SBOM) tools.
+A comprehensive framework containing deliberately vulnerable code examples for testing and evaluating security tools including Static Application Security Testing (SAST), Software Composition Analysis (SCA), Software Bill of Materials (SBOM), and Infrastructure as Code (IaC) security tools.
 
 ## Purpose
 
 This framework is designed for educational and testing purposes only. It contains intentionally vulnerable code snippets to help:
-- Security researchers test SAST, SCA, and SBOM tool capabilities
+- Security researchers test SAST, SCA, SBOM, and IaC tool capabilities
 - Developers learn about common security vulnerabilities
 - Organizations evaluate security tool effectiveness
 - Security training and awareness programs
@@ -41,6 +41,15 @@ This framework includes vulnerabilities detectable by:
 - DustiLock - Supply chain security and dependency confusion detection
 - OWASP Dependency-Check - Dependency vulnerability analysis
 - Trivy-SCA - Vulnerability scanning for dependencies
+
+### IaC (Infrastructure as Code) Security Tools:
+- Checkov - Terraform, Kubernetes, CloudFormation, ARM templates
+- Terrascan - Terraform, Kubernetes, CloudFormation, Dockerfile
+- TFLint - Terraform linting and security checking
+- Hadolint - Dockerfile security linter
+- KICS (Keeping Infrastructure as Code Secure) - Multi-IaC scanning
+- GitLab SAST IaC - Integrated IaC scanning in CI/CD
+- Snyk IaC - Infrastructure as Code security scanning
 
 ## Security Warning
 
@@ -101,6 +110,15 @@ docs/               - Documentation
 - CVE detection across multiple languages (OWASP Dependency-Check)
 - Comprehensive vulnerability scanning (Trivy-SCA)
 
+### IaC (Infrastructure as Code) Vulnerabilities:
+- Hardcoded secrets and credentials in configuration files
+- Publicly accessible resources and open security groups
+- Overly permissive IAM roles and policies
+- Missing encryption for data at rest and in transit
+- Use of deprecated or insecure API versions
+- Resource misconfiguration and security best practices violations
+- Container security issues (root user, latest tags, exposed ports)
+
 ## Usage
 
 ### For SAST Tools:
@@ -121,6 +139,12 @@ docs/               - Documentation
 3. Review detection of license issues, CVEs, and supply chain risks
 4. Compare tool capabilities and coverage
 
+### For IaC Tools:
+1. Navigate to `src/infrastructure/` directory
+2. Test IaC security tools against Terraform, Kubernetes, Docker, and CloudFormation files
+3. Review detection of misconfigurations, hardcoded secrets, and security violations
+4. Compare tool coverage across different IaC languages
+
 ### Example Commands:
 ```bash
 # Generate SBOM with Syft
@@ -137,6 +161,18 @@ dependency-check --project test --scan src/sca/dependency-check-vulnerable.json
 
 # Scan with Trivy SCA
 trivy fs --scanners vuln,license,secret src/sca/
+
+# Scan IaC with Checkov
+checkov -d src/infrastructure/
+
+# Scan Terraform with TFLint
+tflint src/infrastructure/terraform.vulnerable.tf
+
+# Scan Dockerfile with Hadolint
+hadolint src/infrastructure/Dockerfile.vulnerable
+
+# Scan multi-IaC with KICS
+kics scan -p src/infrastructure/
 ```
 
 ## Contributing
